@@ -1,0 +1,4 @@
+*.o
+build/
+stress_logs*/
+disasm.txt
