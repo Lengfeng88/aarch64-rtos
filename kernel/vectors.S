@@ -40,12 +40,6 @@ vectors:
 
 .global sync_el1h
 sync_el1h:
-    // Full register dump for deep debugging - unlike the earlier
-    // minimal version (x0/x1 + esr/elr only), we need to see EVERY
-    // register's value at fault time to find which one held the bad
-    // address that caused a wild branch (ELR pointing at an invalid
-    // address like 0x0 means something jumped there - the interesting
-    // question is which register held that 0).
     sub     sp, sp, #272
     stp     x0,  x1,  [sp, #0]
     stp     x2,  x3,  [sp, #16]
@@ -66,6 +60,8 @@ sync_el1h:
     mrs     x0, esr_el1
     mrs     x1, elr_el1
     stp     x0, x1, [sp, #248]
+    add     x2, sp, #272          // NEW: reconstruct the real pre-exception sp
+    str     x2,      [sp, #264]   // NEW: fill the orig_sp slot main.c already reads
     mov     x0, sp
     bl      sync_exception_handler_full
 hang_after_sync:
