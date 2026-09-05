@@ -21,9 +21,9 @@ No Linux, no existing RTOS base (not FreeRTOS/Zephyr/etc.) — every layer (boot
 | M4 | GIC → IRQ → ISR → preemptive task wakeup | ✅ |
 | M5 | Mutex / Semaphore / Event / Queue | ✅ |
 | M6 | DMA → Accelerator HAL → MMIO (PCIe device) | ✅ |
-| M7 | Full integration — concurrent tasks, real hardware DMA, IRQ-driven wakeup | ✅ (~90-95% reliable, one known open issue) |
+| M7 | Full integration — concurrent tasks, real hardware DMA, IRQ-driven wakeup | ✅ (~93-96% reliable, one known open issue) |
 
-Full write-up of what each milestone does, the bugs found along the way, and how they were diagnosed: see [`docs/M1-M7-writeup.md`](docs/M1-M7-writeup.md).
+Full write-up of what each milestone does, the bugs found along the way, and how they were diagnosed: see [`docs/M1-M7-writeup.md`](docs/M1-M7-writeup.md) (M1-M7 core milestones, including the resolved `EC=0x0E` investigation) and [`EC-0x00-investigation.md`](EC-0x00-investigation.md) (the still-open issue below).
 
 ## Building and running
 
@@ -65,7 +65,11 @@ The device's register layout is defined in `dma_accel_regs.h` (BAR0 offsets, SQ/
 
 ## Known issues
 
-- **`EC=0x0E` ("Illegal Execution state") crash**, ~7-10% of M7 runs with 3 concurrent workers. Happens *after* all completions have already been correctly dispatched (confirmed via register-dump + pending-table state at crash time), so it's a distinct issue from the three scheduler bugs already found and fixed during M7 bring-up — not yet root-caused. See the writeup for what's been ruled out so far.
+- **`EC=0x00` ("Unknown reason") / `ELR=0x0` wild-jump crash**, ~3-7% of M7 runs with 3 concurrent workers. Confirmed *not* to go through `switch_to()` (independent of the resolved `EC=0x0E` below). Extensive investigation produced two reproducible clues — the register that should hold a return address sometimes reads back as either the exact DAIF-all-masked encoding (`0x3c0`) or a worker's own task-control-block base address — but the exact instruction/timing mechanism hasn't been pinned down. See [`EC-0x00-investigation.md`](EC-0x00-investigation.md) for the full trail, including several ruled-out theories.
+
+### Resolved
+
+- **`EC=0x0E` ("Illegal Execution state") crash** — root-caused: `switch_to()` had no self-protection against interrupts landing mid-switch. Fixed by having `switch_to()` mask IRQ for its entire duration and treat DAIF as per-task saved context. See the writeup's `EC=0x0E` section for the full root-cause/fix/verification.
 
 ## Code layout
 
