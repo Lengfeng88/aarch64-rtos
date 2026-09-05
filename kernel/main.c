@@ -111,24 +111,64 @@ static void print_decline(const char *prefix, unsigned long v) {
     uart_puts(line);
 }
 
+/* Called from sched.c/sync.c's checked_switch_to() when a task's sp,
+   right after switch_to() returns, is found NOT to fall within that
+   task's own stack[] array - i.e. the corruption we're hunting
+   actually happened during THIS specific switch_to() call, at THIS
+   specific call site. Prints where + the bad value and halts, so the
+   very first hit pins down both the call site and the bad value
+   without any further guessing. */
+void report_corrupt_sp(const char *where, unsigned long sp) {
+    print_hexline(where, sp);
+    while (1) { __asm__ volatile("wfe"); }
+}
+void trace_switch_resume(unsigned long *frame) {
+    unsigned long x30_slot = frame[3];   // offset 24 / 8 = index 3
+    /* Cheap check first, before any UART output: valid code/data
+       addresses in this kernel are all >= 0x40000000. Anything below
+       that (like the 0x3c0 we've been chasing) is suspicious and
+       worth the (expensive) print. Skip silently otherwise - this
+       keeps the overhead near zero on the many thousands of routine,
+       healthy switches. */
+    if (x30_slot >= 0x40000000UL) {
+        return;
+    }
+    print_hexline("SUSPICIOUS x30 slot, frame=", (unsigned long)frame);
+    print_hexline(" x30_slot=", x30_slot);
+    for (int i = 0; i < 14; i++) {
+        print_hexline(" w=", frame[i]);
+    }
+}
+
 /* Full register dump at fault time. regs[] layout, per vectors.S's
    sync_el1h: x0..x30 (31 regs, 8 bytes each = 248 bytes) then esr,elr
    (16 more bytes) = 264 bytes total, at the pointer passed in via x0. */
 void sync_exception_handler_full(unsigned long *regs) {
     unsigned long esr = regs[31];
     unsigned long elr = regs[32];
+    unsigned long orig_sp = regs[33];   // NEW - the offset-264 slot vectors.S now fills in
     print_hexline("SYNC EXCEPTION ESR=", esr);
     print_hexline("SYNC EXCEPTION ELR=", elr);
+    print_hexline("SYNC EXCEPTION SP=", orig_sp);   // NEW
+
+    // NEW: does this sp fall inside any worker's own stack array?
+    int matched_worker = -1;
+    for (int i = 0; i < NUM_WORKERS; i++) {
+        unsigned long lo = (unsigned long)&taskWorker[i].stack[0];
+        unsigned long hi = lo + STACK_WORDS * sizeof(unsigned long);
+        if (orig_sp >= lo && orig_sp < hi) {
+            matched_worker = i;
+            break;
+        }
+    }
+    print_decline("SYNC EXCEPTION SP belongs to worker (-1=none)=", (unsigned long)matched_worker);
+
     const char *names[31] = {
         "x0","x1","x2","x3","x4","x5","x6","x7","x8","x9",
         "x10","x11","x12","x13","x14","x15","x16","x17","x18","x19",
         "x20","x21","x22","x23","x24","x25","x26","x27","x28","x29","x30"
     };
     for (int i = 0; i < 31; i++) {
-        if (regs[i] == 0 || regs[i] > 0xFFFFFFFF || (regs[i] >= 0x40000000UL && regs[i] < 0x40100000UL)) {
-            /* only print registers that look interesting (zero, huge,
-               or pointing into our kernel's own RAM range) - the rest
-               are just noise for this specific investigation */
             char label[8];
             int li = 0;
             label[li++] = ' ';
@@ -137,8 +177,8 @@ void sync_exception_handler_full(unsigned long *regs) {
             if (names[i][2]) label[li++] = names[i][2];
             label[li] = 0;
             print_hexline(label, regs[i]);
-        }
     }
+    
     print_decline("P4 M7: current task = ", (unsigned long)(current == &taskWorker[0] ? 0 : current == &taskWorker[1] ? 1 : current == &taskWorker[2] ? 2 : 99));
     for (int i = 0; i < NUM_WORKERS; i++) {
         print_decline("P4 M7: pending[i].used=", (unsigned long)pending[i].used);
@@ -147,6 +187,8 @@ void sync_exception_handler_full(unsigned long *regs) {
         print_hexline("P4 M7: pending[i].sem ptr=", (unsigned long)pending[i].sem);
     }
     while (1) { __asm__ volatile("wfe"); }
+
+
 }
 
 static void set_vbar(void) {
@@ -238,6 +280,13 @@ void irq_handler(void) {
             tcb_t *prev = current;
             current = next;
             switch_to(&prev->sp, next->sp);
+            unsigned long lo = (unsigned long)&prev->stack[0];
+            unsigned long hi = lo + STACK_WORDS * sizeof(unsigned long);
+            if (prev->sp < lo || prev->sp >= hi) {
+                print_hexline("CORRUPT sp after irq_handler switch_to, sp=", prev->sp);
+                while (1) { __asm__ volatile("wfe"); }
+            }
+
         }
         return;
     }
@@ -367,8 +416,6 @@ void kernel_main(unsigned long boot_path) {
     gic_enable_irq(TIMER_IRQ_ID);
     gic_enable_irq(DMA_ACCEL_IRQ_ID);
     timer_rearm(tick_freq / 2000);
-
-    __asm__ volatile("msr daifclr, #2");
 
     unsigned long dummy_sp;
     switch_to(&dummy_sp, taskWorker[0].sp);

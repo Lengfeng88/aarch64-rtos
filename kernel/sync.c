@@ -18,6 +18,7 @@ typedef struct {
 extern void switch_to(unsigned long *old_sp_ptr, unsigned long new_sp);
 extern tcb_t *current;
 extern tcb_t *pick_next_ready(void);
+extern void report_corrupt_sp(const char *where, unsigned long sp);
 
 static inline unsigned long irq_disable_save(void) {
     unsigned long flags;
@@ -30,11 +31,28 @@ static inline void irq_restore(unsigned long flags) {
     __asm__ volatile("msr daif, %0" :: "r"(flags));
 }
 
+/* WINDOW-3 FIX (same as sched.c's checked_switch_to - see that file's
+   comment for the full rationale): mask IRQ around the post-switch
+   bounds check itself, not just the switch_to() call. */
+static inline void checked_switch_to(tcb_t *prev, tcb_t *next, const char *where) {
+    switch_to(&prev->sp, next->sp);
+    unsigned long flags = irq_disable_save();
+    unsigned long lo = (unsigned long)&prev->stack[0];
+    unsigned long hi = lo + STACK_WORDS * sizeof(unsigned long);
+    int bad = (prev->sp < lo || prev->sp >= hi);
+    unsigned long bad_sp = prev->sp;
+    irq_restore(flags);
+    if (bad) {
+        report_corrupt_sp(where, bad_sp);
+    }
+}
+
 void sem_init(sem_t *s, int initial_count) {
     s->count = initial_count;
     s->waiter = 0;
 }
 
+/* Back to its original, pre-window-1 form. */
 void sem_wait(sem_t *s) {
     unsigned long flags = irq_disable_save();
     if (s->count > 0) {
@@ -42,12 +60,6 @@ void sem_wait(sem_t *s) {
         irq_restore(flags);
         return;
     }
-    /* No permits available: block. We must not leave IRQ disabled across
-       the switch_to below - PSTATE.I is live CPU state, not something
-       switch_to saves per-task, so if we switched away with it still
-       masked the task we switch into would also run with interrupts
-       masked. Re-enable before switching, once our own state (BLOCKED +
-       registered as the waiter) is consistent. */
     s->waiter = current;
     current->state = 1;
     irq_restore(flags);
@@ -55,31 +67,13 @@ void sem_wait(sem_t *s) {
     tcb_t *prev = current;
     tcb_t *next = pick_next_ready();
     if (next == prev) {
-        /* Nobody else in the whole system is READY right now - every
-           task is blocked on something. pick_next_ready()'s only
-           option was to hand back the very task that just marked
-           itself BLOCKED. Calling switch_to(&prev->sp, next->sp) here
-           would be switch_to(&X->sp, X->sp): it overwrites X->sp with
-           X's CURRENT (mid-sem_wait) stack pointer, then tries to
-           resume from the value X->sp held BEFORE this call (an
-           already-consumed earlier frame - e.g. the fake initial
-           frame from task_init(), stale since this task's first
-           activation) - restoring garbage and returning through a
-           dead pointer. This never came up before M7's 3-worker demo
-           because some other task was always still READY whenever
-           one blocked; it's the first scenario where literally every
-           task can be simultaneously BLOCKED with nothing to switch
-           to. Instead of a context switch, just wait for a hardware
-           interrupt to make us READY again (sem_post from an ISR is
-           the only thing that can, since nothing else is running),
-           re-checking our own state each time we wake. */
         while (current->state != 0) {
             __asm__ volatile("wfe");
         }
         return;
     }
     current = next;
-    switch_to(&prev->sp, next->sp);
+    checked_switch_to(prev, next, "CORRUPT sp after sem_wait() switch_to, sp=");
     /* Resumes here once sem_post() marks us READY again and the
        scheduler (preemptive or another voluntary yield) switches back. */
 }
@@ -89,10 +83,7 @@ void sem_post(sem_t *s) {
     if (s->waiter) {
         tcb_t *w = s->waiter;
         s->waiter = 0;
-        w->state = 0;   /* READY: hand the permit directly to the
-                            waiter rather than incrementing count, so
-                            wake-ups aren't lost between the count check
-                            and the waiter registering itself */
+        w->state = 0;
     } else {
         s->count++;
     }
@@ -102,7 +93,7 @@ void sem_post(sem_t *s) {
 typedef struct {
     volatile int locked;
     tcb_t *owner;
-    tcb_t *waiter;   /* same single-waiter simplification as sem_t */
+    tcb_t *waiter;
 } mutex_t;
 
 void mutex_init(mutex_t *m) {
@@ -126,8 +117,7 @@ void mutex_lock(mutex_t *m) {
     tcb_t *next = pick_next_ready();
     tcb_t *prev = current;
     current = next;
-    switch_to(&prev->sp, next->sp);
-    /* Resumes here once mutex_unlock() hands ownership directly to us. */
+    checked_switch_to(prev, next, "CORRUPT sp after mutex_lock() switch_to, sp=");
 }
 
 void mutex_unlock(mutex_t *m) {
@@ -135,10 +125,7 @@ void mutex_unlock(mutex_t *m) {
     if (m->waiter) {
         tcb_t *w = m->waiter;
         m->waiter = 0;
-        m->owner = w;      /* ownership transfers directly to the
-                               waiter - locked stays 1 throughout, so
-                               there's no window where the mutex looks
-                               free to a third task */
+        m->owner = w;
         w->state = 0;
     } else {
         m->locked = 0;
@@ -151,18 +138,8 @@ typedef struct {
     volatile unsigned int flags;
     tcb_t *waiter;
     unsigned int wait_mask;
-    int wait_all;   /* 0 = wake on ANY bit in wait_mask, 1 = wake only
-                        once ALL bits in wait_mask are set */
-    unsigned int wake_result;   /* captured inside the critical section
-                                    at the exact moment we decide to
-                                    wake the waiter - the woken task
-                                    reads this instead of re-reading
-                                    live e->flags later, which could by
-                                    then have been changed again by
-                                    someone else (e.g. a second
-                                    event_clear()+event_set() cycle
-                                    that runs before the woken task
-                                    actually gets scheduled) */
+    int wait_all;
+    unsigned int wake_result;
 } event_t;
 
 void event_init(event_t *e) {
@@ -184,10 +161,7 @@ void event_set(event_t *e, unsigned int bits) {
     if (e->waiter && event_satisfied(e)) {
         tcb_t *w = e->waiter;
         e->waiter = 0;
-        e->wake_result = e->flags & e->wait_mask;   /* lock in the
-                                                         result now,
-                                                         while we know
-                                                         it's correct */
+        e->wake_result = e->flags & e->wait_mask;
         w->state = 0;
     }
     irq_restore(flags);
@@ -215,11 +189,7 @@ unsigned int event_wait(event_t *e, unsigned int mask, int wait_all) {
     tcb_t *next = pick_next_ready();
     tcb_t *prev = current;
     current = next;
-    switch_to(&prev->sp, next->sp);
-    /* Resumes here once event_set() finds the wait condition satisfied
-       and marks us READY again. Read the result event_set() captured
-       at wake time - NOT live e->flags, which may have moved on by
-       now (see the struct comment on wake_result). */
+    checked_switch_to(prev, next, "CORRUPT sp after event_wait() switch_to, sp=");
     return e->wake_result;
 }
 
@@ -228,8 +198,8 @@ unsigned int event_wait(event_t *e, unsigned int mask, int wait_all) {
 typedef struct {
     unsigned long buf[QUEUE_CAP];
     int head, tail, count;
-    tcb_t *send_waiter;   /* blocked producer, waiting for a free slot */
-    tcb_t *recv_waiter;   /* blocked consumer, waiting for an item */
+    tcb_t *send_waiter;
+    tcb_t *recv_waiter;
 } queue_t;
 
 void queue_init(queue_t *q) {
@@ -238,11 +208,6 @@ void queue_init(queue_t *q) {
     q->recv_waiter = 0;
 }
 
-/* Unlike sem/mutex/event's one-shot wake, a blocked sender or receiver
-   here still has to actually perform its own push/pop after waking -
-   waking it just means "a slot might be available now", not "here is
-   your slot". A retry loop is simpler to get right than trying to hand
-   off a specific queue slot directly. */
 void queue_send(queue_t *q, unsigned long item) {
     while (1) {
         unsigned long flags = irq_disable_save();
@@ -265,11 +230,7 @@ void queue_send(queue_t *q, unsigned long item) {
         tcb_t *next = pick_next_ready();
         tcb_t *prev = current;
         current = next;
-        switch_to(&prev->sp, next->sp);
-        /* Woken because a slot was freed - loop back and retry rather
-           than assume our specific slot is still there (a third task
-           could in principle have taken it first in a more general
-           system than this single-producer/single-consumer demo). */
+        checked_switch_to(prev, next, "CORRUPT sp after queue_send() switch_to, sp=");
     }
 }
 
@@ -295,6 +256,6 @@ unsigned long queue_recv(queue_t *q) {
         tcb_t *next = pick_next_ready();
         tcb_t *prev = current;
         current = next;
-        switch_to(&prev->sp, next->sp);
+        checked_switch_to(prev, next, "CORRUPT sp after queue_recv() switch_to, sp=");
     }
 }
