@@ -4,6 +4,10 @@ extern void gic_init(void);
 extern void gic_enable_irq(unsigned int id);
 extern unsigned int gic_ack(void);
 extern void gic_eoi(unsigned int id);
+extern unsigned int sched_debug_task_ewma(int i);
+extern void sched_on_tick(void);
+extern unsigned long sched_debug_select_count(int i);
+
 
 #define STACK_WORDS 512
 #define TIMER_IRQ_ID 30
@@ -18,6 +22,7 @@ typedef struct {
     const char *name;
     void (*entry)(void);
     int state;
+    unsigned int ewma_load;   
 } tcb_t;
 
 typedef struct {
@@ -67,6 +72,7 @@ extern void *sched_debug_task_ptr(int i);
    (which needs to inspect these for crash diagnostics) can see them -
    they're still defined exactly once, just earlier. */
 static tcb_t taskWorker[NUM_WORKERS];
+static tcb_t busy_task;
 tcb_t *current;
 
 typedef struct {
@@ -274,6 +280,7 @@ void irq_handler(void) {
 
     if (id == TIMER_IRQ_ID) {
         timer_rearm(tick_freq / 2000);
+        sched_on_tick(); 
         tcb_t *next = pick_next_ready();
         gic_eoi(id);
         if (next != current) {
@@ -334,6 +341,9 @@ void worker_entry(void) {
        both calls in one critical section so the doorbell ring and the
        registration are atomic as a pair. */
     unsigned long flags = irq_disable_save();
+    current->state = 1;
+    irq_restore(flags);
+    while (1) { __asm__ volatile("wfe"); }
     unsigned long cmd_id = accel_submit_copy(src_phys, dst_phys, TEST_LEN);
     pending_register(cmd_id, &worker_sem[id]);
     irq_restore(flags);
@@ -359,6 +369,7 @@ void worker_entry(void) {
                           : "P4 M7: worker DATA MISMATCH, cmd_id=", cmd_id);
 
     worker_loops_seen[id] = 1;
+    print_decline("WORKER ewma=", (unsigned long)current->ewma_load);
 
     /* Don't just idle here hoping the timer eventually preempts its
        way to whichever workers are still suspended - same lesson as
@@ -388,6 +399,21 @@ void worker_entry(void) {
     while (1) { __asm__ volatile("wfe"); }
 }
 
+static void busy_task_entry(void) {
+    unsigned long counter = 0;
+    while (1) {
+        counter++;
+        if ((counter & 0xFFFFF) == 0) {
+            print_decline("BUSY TASK ewma=", (unsigned long)busy_task.ewma_load);
+            print_decline("SELECT busy=", sched_debug_select_count(3));   // busy_task是第4个注册的，index=3
+            print_decline("SELECT w0=", sched_debug_select_count(0));
+            print_decline("SELECT w1=", sched_debug_select_count(1));
+            print_decline("SELECT w2=", sched_debug_select_count(2));
+}
+        /* 故意不yield() —— 只靠timer抢占它 */
+    }
+}
+
 void kernel_main(unsigned long boot_path) {
     (void)boot_path;
     set_vbar();
@@ -407,10 +433,16 @@ void kernel_main(unsigned long boot_path) {
         taskWorker[i].name = "worker";
         task_init(&taskWorker[i], worker_entry);
     }
+
+    busy_task.name = "busy";
+    task_init(&busy_task, busy_task_entry); 
+
     current = &taskWorker[0];
     for (int i = 0; i < NUM_WORKERS; i++) {
         sched_register(&taskWorker[i]);
     }
+
+    sched_register(&busy_task); 
 
     gic_init();
     gic_enable_irq(TIMER_IRQ_ID);

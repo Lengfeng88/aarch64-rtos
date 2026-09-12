@@ -6,6 +6,7 @@ typedef struct {
     const char *name;
     void (*entry)(void);
     int state;   /* 0 = READY, 1 = BLOCKED */
+    unsigned int ewma_load;
 } tcb_t;
 
 typedef struct {

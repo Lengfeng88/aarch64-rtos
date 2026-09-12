@@ -22,6 +22,7 @@ No Linux, no existing RTOS base (not FreeRTOS/Zephyr/etc.) — every layer (boot
 | M5 | Mutex / Semaphore / Event / Queue | ✅ |
 | M6 | DMA → Accelerator HAL → MMIO (PCIe device) | ✅ |
 | M7 | Full integration — concurrent tasks, real hardware DMA, IRQ-driven wakeup | ✅ (~93-96% reliable, one known open issue) |
+| M8 | Pluggable scheduling policy interface + EWMA CPU load prediction | ✅ |
 
 Full write-up of what each milestone does, the bugs found along the way, and how they were diagnosed: see [`docs/M1-M7-writeup.md`](docs/M1-M7-writeup.md) (M1-M7 core milestones, including the resolved `EC=0x0E` investigation) and [`EC-0x00-investigation.md`](EC-0x00-investigation.md) (the still-open issue below).
 
@@ -63,9 +64,23 @@ M1–M5 run on stock `qemu-system-aarch64`. M6/M7 need a custom PCIe device mode
 
 The device's register layout is defined in `dma_accel_regs.h` (BAR0 offsets, SQ/CQ descriptor formats, opcodes) — this is the source of truth for `kernel/pci.c` and `kernel/accel.c`.
 
+## M8: Scheduling policy interface and load prediction
+
+Added a pluggable `sched_policy_t` interface (`select_next` + `on_tick` function pointers) so the scheduler can swap decision logic without touching call sites in `main.c`/`sync.c`. Three policies implemented:
+
+- `policy_roundrobin` — the original M1-M7 round-robin logic, unchanged, now behind the interface
+- `policy_ewma` — round-robin selection, but tracks a fixed-point EWMA (`ewma_load`, 0-1000 scale, α=0.3) of each task's recent CPU occupancy via `on_tick`
+- `policy_load_aware` — selects the READY task with the lowest `ewma_load` instead of pure round-robin
+
+Verified with a dedicated non-yielding `busy_task` alongside the normal DMA workers: `ewma_load` converges to ~997/1000 for the busy task vs. 0-510 for the mostly-blocked workers, confirming the estimator distinguishes real load levels. Found and fixed a real workload-modeling bug in the process: completed worker tasks never set their own state to `BLOCKED`, so they stayed in the scheduling candidate pool indefinitely and their `ewma_load` re-climbed toward saturation over time — silently degenerating `policy_load_aware` back into round-robin once workers finished. Fixed by setting `state=1` when a worker's work is done.
+
+Each M8 sub-step was verified against the existing `stress_test.sh` 30-run regression baseline (~10-13% real failure rate, consistent with the pre-existing, unrelated `EC=0x00` investigation below) to confirm no new regressions.
+
+See [`tools/`](tools/) for the Python-based log parsing/analysis tooling built alongside this work, and [`docs/M8-RL-Scheduling-Feasibility-Note.md`](docs/M8-RL-Scheduling-Feasibility-Note.md) for a design-only feasibility evaluation of extending this into a reinforcement-learning scheduling research track (no kernel changes, simulation only, not yet implemented).
+
 ## Known issues
 
-- **`EC=0x00` ("Unknown reason") / `ELR=0x0` wild-jump crash**, ~3-7% of M7 runs with 3 concurrent workers. Confirmed *not* to go through `switch_to()` (independent of the resolved `EC=0x0E` below). Extensive investigation produced two reproducible clues — the register that should hold a return address sometimes reads back as either the exact DAIF-all-masked encoding (`0x3c0`) or a worker's own task-control-block base address — but the exact instruction/timing mechanism hasn't been pinned down. See [`EC-0x00-investigation.md`](EC-0x00-investigation.md) for the full trail, including several ruled-out theories.
+- **`EC=0x00` ("Unknown reason") / `ELR=0x0` wild-jump crash**, ~3-13% of stress runs with 3 concurrent workers (rate varies slightly across M7/M8 sub-steps, consistently within the same noise range). Confirmed *not* to go through `switch_to()` (independent of the resolved `EC=0x0E` below). Extensive investigation produced two reproducible clues — the register that should hold a return address sometimes reads back as either the exact DAIF-all-masked encoding (`0x3c0`) or a worker's own task-control-block base address — but the exact instruction/timing mechanism hasn't been pinned down. See [`EC-0x00-investigation.md`](EC-0x00-investigation.md) for the full trail, including several ruled-out theories.
 
 ### Resolved
 
@@ -74,17 +89,18 @@ The device's register layout is defined in `dma_accel_regs.h` (BAR0 offsets, SQ/
 ## Code layout
 
 ```
-boot/boot.S           — reset entry, EL2→EL1 drop, stack/BSS init
+boot/boot.S            — reset entry, EL2→EL1 drop, stack/BSS init
 kernel/vectors.S       — exception vector table, full-register IRQ save/restore
 kernel/switch.S        — cooperative context switch (callee-saved only)
 kernel/uart.c          — PL011 polling driver
 kernel/task.c          — TCB, stack frame construction, task_trampoline
-kernel/sched.c         — pick_next_ready(), yield(), task registration
+kernel/sched.c         — pluggable sched_policy_t interface, pick_next_ready(), yield(), task registration
 kernel/gic.c           — GICv2 distributor/CPU interface (PPI/SGI and SPI)
 kernel/sync.c          — Semaphore / Mutex / Event / Queue
 kernel/pci.c           — PCIe ECAM enumeration, BAR sizing/mapping, IRQ pin→SPI
 kernel/accel.c         — dma-accel HAL: SQ/CQ registration, submission, IRQ-driven completion
 kernel/main.c          — current milestone's test harness (replaced each milestone)
+tools/                 — Python log parsing (parse_log.py) and cross-batch stress-test summary (summarize_batches.py)
 ```
 
 ## Design notes worth knowing before reading the code

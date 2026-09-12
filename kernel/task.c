@@ -7,6 +7,7 @@ typedef struct {
     const char *name;
     void (*entry)(void);
     int state;
+    unsigned int ewma_load;
 } tcb_t;
 
 extern void switch_to(unsigned long *old_sp_ptr, unsigned long new_sp);

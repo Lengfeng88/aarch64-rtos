@@ -7,6 +7,7 @@ typedef struct {
     const char *name;
     void (*entry)(void);
     int state;
+    unsigned int ewma_load;
 } tcb_t;
 
 extern tcb_t *current;
@@ -16,6 +17,7 @@ extern void report_corrupt_sp(const char *where, unsigned long sp);
 static tcb_t *all_tasks[MAX_TASKS];
 static int num_tasks = 0;
 static int current_idx = 0;
+static unsigned long select_count[MAX_TASKS];
 
 /* NEW (window-3 fix only): needed so checked_switch_to() can mask IRQ
    around its own post-switch bounds check. Not used anywhere else in
@@ -42,11 +44,12 @@ void sched_register(tcb_t *t) {
    Both the timer ISR (preemption) and sem_wait (voluntary block) go
    through this single path, so a task that's BLOCKED is never handed
    the CPU by either mechanism. */
-tcb_t *pick_next_ready(void) {
+static tcb_t *roundrobin_select_next(void) {
     for (int i = 1; i <= num_tasks; i++) {
         int idx = (current_idx + i) % num_tasks;
         if (all_tasks[idx]->state == 0) {
             current_idx = idx;
+            select_count[idx]++;
             return all_tasks[idx];
         }
     }
@@ -61,11 +64,72 @@ tcb_t *pick_next_ready(void) {
     return current;
 }
 
+static tcb_t *load_aware_select_next(void) {
+    tcb_t *best = 0;
+    int best_idx = -1;
+    for (int i = 1; i <= num_tasks; i++) {
+        int idx = (current_idx + i) % num_tasks;
+        if (all_tasks[idx]->state == 0) {
+            if (best == 0 || all_tasks[idx]->ewma_load < best->ewma_load) {
+                best = all_tasks[idx];
+                best_idx = idx;
+            }
+        }
+    }
+    if (best) {
+        current_idx = best_idx;
+        select_count[best_idx]++;
+        return best;
+    }
+    /* 跟roundrobin_select_next()一样的fallback，state同步逻辑不变 */
+    for (int i = 0; i < num_tasks; i++) {
+        if (all_tasks[i] == current) {
+            current_idx = i;
+            break;
+        }
+    }
+    return current;
+}
+
+typedef tcb_t* (*select_next_fn)(void);
+typedef void (*on_tick_fn)(tcb_t *cur);
+typedef struct {
+    select_next_fn select_next;
+    on_tick_fn on_tick;
+} sched_policy_t;
+
+static sched_policy_t policy_roundrobin = { roundrobin_select_next, 0 };
+
+#define EWMA_ALPHA_NUM 3
+#define EWMA_ALPHA_DEN 10
+#define EWMA_SCALE 1000
+
+static void ewma_on_tick(tcb_t *cur) {
+    cur->ewma_load = (EWMA_ALPHA_NUM * EWMA_SCALE 
+                     + (EWMA_ALPHA_DEN - EWMA_ALPHA_NUM) * cur->ewma_load) 
+                     / EWMA_ALPHA_DEN;
+}
+
+static sched_policy_t policy_ewma = { roundrobin_select_next, ewma_on_tick };
+static sched_policy_t policy_load_aware = { load_aware_select_next, ewma_on_tick };
+static sched_policy_t *active_policy = &policy_load_aware;
+
+tcb_t *pick_next_ready(void) {
+    return active_policy->select_next();
+}
+
+void sched_on_tick(void) {
+    if (active_policy->on_tick) {
+        active_policy->on_tick(current);
+    }
+}
+
 /* Debug-only accessors for tracking down the M7 scheduling issue. */
 int sched_debug_current_idx(void) { return current_idx; }
 int sched_debug_num_tasks(void) { return num_tasks; }
 int sched_debug_task_state(int i) { return all_tasks[i]->state; }
 void *sched_debug_task_ptr(int i) { return (void *)all_tasks[i]; }
+unsigned long sched_debug_select_count(int i) { return select_count[i]; }
 
 /* Wraps switch_to() with a post-switch sanity check. Once control
    returns here (prev has been switched back in - possibly much later,
