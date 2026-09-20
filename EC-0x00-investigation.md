@@ -159,3 +159,15 @@ stress_logs_maskfix300/).
 Not proven: that the original intermittent EC=0x00/ELR=0 had this cause.
 It is no longer observed. Diagnostic hooks (check_sp_write, tick sweep,
 record_switch) were still in the build; a hook-free batch is pending.
+
+## Hook-free acceptance (2026-09-20)
+`make DEBUG_HOOKS=1` reproduces the instrumented build (disassembly identical
+to build/kernel_maskfix.elf); default `make` has no hooks. Hook-free
+build/kernel_nohooks.elf: 100/100 clean, 0 crashed, 0 unclear
+(stress_logs_nohooks100/). Combined with 300/300 on the instrumented build.
+Scope: single CPU, 3 workers + busy task, 40 s per run.
+
+## Rebuilding pre-M8 tags
+p4-single-core-baseline and p4-single-core-maskfix-300 reference
+__cpu1_stack_top, which linker.ld only defines from the commit that adds it.
+To rebuild them: git checkout <tag> && git checkout p4-m9a -- linker.ld && make
