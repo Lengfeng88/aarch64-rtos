@@ -69,7 +69,6 @@ extern int sched_debug_task_state(int i);
 extern void *sched_debug_task_ptr(int i);
 extern int psci_cpu_on(unsigned long target_cpu_mpidr, unsigned long entry_point_pa);
 extern void secondary_start(void);
-extern void smp_boot_secondaries(void);
 
 /* Moved up from further down in the file so sync_exception_handler_full
    (which needs to inspect these for crash diagnostics) can see them -
@@ -633,7 +632,8 @@ void kernel_main(unsigned long boot_path) {
     __asm__ volatile("mrs %0, MPIDR_EL1" : "=r"(mpidr));
     print_hexline("CPU0: MPIDR_EL1=", mpidr);
 
-    smp_boot_secondaries();
+    int psci_rc = 0; // psci_cpu_on(1, (unsigned long)&secondary_start);
+    print_decline("CPU0: psci_cpu_on SKIPPED (single-core), rc=", (unsigned long)psci_rc);
 
     unsigned long dummy_sp;
     switch_to(&dummy_sp, taskWorker[0].sp);

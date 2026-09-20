@@ -8,7 +8,7 @@ CFLAGS += -DDEBUG_HOOKS
 endif
 
 OBJS = boot/boot.o kernel/vectors.o kernel/uart.o kernel/switch.o kernel/task.o \
-       kernel/gic.o kernel/sched.o kernel/sync.o kernel/pci.o kernel/accel.o kernel/psci.o kernel/main.o
+       kernel/gic.o kernel/sched.o kernel/sync.o kernel/pci.o kernel/accel.o kernel/psci.o kernel/smp.o kernel/main.o
 
 build/kernel.elf: $(OBJS) linker.ld
 	mkdir -p build

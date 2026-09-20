@@ -68,13 +68,10 @@ secondary_from_el2:
     eret
 
 secondary_from_el1:
-    mrs     x0, mpidr_el1
-    and     x0, x0, #0xff          // cpu id = Aff0 (QEMU virt numbering)
-    ldr     x1, =cpu_stacks
-    add     x2, x0, #1
-    add     x1, x1, x2, lsl #12    // top of this CPU's 4 KiB stack
-    mov     sp, x1
-    bl      secondary_main         // x0 = cpu id
+    ldr     x0, =__cpu1_stack_top
+    mov     sp, x0
+
+    bl      secondary_entry_c
 secondary_hang:
     wfe
     b       secondary_hang
