@@ -149,7 +149,19 @@ unsigned long sched_debug_select_count(int i) { return select_count[i]; }
    (not the switch_to() call itself, which already manages its own
    masking internally) closes that gap without changing when the
    actual task switch happens. */
+extern void record_switch(const char *site, void *prev_p, void *next_p);
+
+extern void report_pre_switch_bad(const char *where, void *next_p, unsigned long bad_sp);
+
 static inline void checked_switch_to(tcb_t *prev, tcb_t *next, const char *where) {
+    record_switch(where, prev, next);
+    {
+        unsigned long nlo = (unsigned long)&next->stack[0];
+        unsigned long nhi = nlo + STACK_WORDS * sizeof(unsigned long);
+        if (next->sp < nlo || next->sp >= nhi) {
+            report_pre_switch_bad(where, next, next->sp);
+        }
+    }
     switch_to(&prev->sp, next->sp);
     unsigned long flags = irq_disable_save();
     unsigned long lo = (unsigned long)&prev->stack[0];
@@ -165,10 +177,12 @@ static inline void checked_switch_to(tcb_t *prev, tcb_t *next, const char *where
 /* Voluntary yield: give up the CPU to another READY task without
    blocking. Back to its original, pre-window-1 form. */
 void yield(void) {
+    unsigned long flags = irq_disable_save();
     tcb_t *next = pick_next_ready();
     if (next != current) {
         tcb_t *prev = current;
         current = next;
         checked_switch_to(prev, next, "CORRUPT sp after yield() switch_to, sp=");
     }
+    irq_restore(flags);
 }

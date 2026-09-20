@@ -35,7 +35,19 @@ static inline void irq_restore(unsigned long flags) {
 /* WINDOW-3 FIX (same as sched.c's checked_switch_to - see that file's
    comment for the full rationale): mask IRQ around the post-switch
    bounds check itself, not just the switch_to() call. */
+extern void record_switch(const char *site, void *prev_p, void *next_p);
+
+extern void report_pre_switch_bad(const char *where, void *next_p, unsigned long bad_sp);
+
 static inline void checked_switch_to(tcb_t *prev, tcb_t *next, const char *where) {
+    record_switch(where, prev, next);
+    {
+        unsigned long nlo = (unsigned long)&next->stack[0];
+        unsigned long nhi = nlo + STACK_WORDS * sizeof(unsigned long);
+        if (next->sp < nlo || next->sp >= nhi) {
+            report_pre_switch_bad(where, next, next->sp);
+        }
+    }
     switch_to(&prev->sp, next->sp);
     unsigned long flags = irq_disable_save();
     unsigned long lo = (unsigned long)&prev->stack[0];
@@ -46,6 +58,28 @@ static inline void checked_switch_to(tcb_t *prev, tcb_t *next, const char *where
     if (bad) {
         report_corrupt_sp(where, bad_sp);
     }
+}
+
+/* Caller has already masked IRQ (flags = DAIF from before masking) and
+   marked itself BLOCKED. Choosing the next task, updating current and
+   switch_to() all happen with IRQ masked, so a timer IRQ can never see
+   current != the stack we are actually running on. switch_to() saves
+   the masked DAIF as part of this task's context, so we resume masked
+   and restore the caller's original DAIF only after switching back. */
+static void block_current_and_switch(unsigned long flags, const char *where) {
+    tcb_t *prev = current;
+    tcb_t *next = pick_next_ready();
+    if (next == prev) {
+        /* Nobody else runnable: open IRQ and wait to be woken. */
+        irq_restore(flags);
+        while (current->state != 0) {
+            __asm__ volatile("wfe");
+        }
+        return;
+    }
+    current = next;
+    checked_switch_to(prev, next, where);
+    irq_restore(flags);
 }
 
 void sem_init(sem_t *s, int initial_count) {
@@ -63,18 +97,7 @@ void sem_wait(sem_t *s) {
     }
     s->waiter = current;
     current->state = 1;
-    irq_restore(flags);
-
-    tcb_t *prev = current;
-    tcb_t *next = pick_next_ready();
-    if (next == prev) {
-        while (current->state != 0) {
-            __asm__ volatile("wfe");
-        }
-        return;
-    }
-    current = next;
-    checked_switch_to(prev, next, "CORRUPT sp after sem_wait() switch_to, sp=");
+    block_current_and_switch(flags, "CORRUPT sp after sem_wait() switch_to, sp=");
     /* Resumes here once sem_post() marks us READY again and the
        scheduler (preemptive or another voluntary yield) switches back. */
 }
@@ -113,12 +136,7 @@ void mutex_lock(mutex_t *m) {
     }
     m->waiter = current;
     current->state = 1;
-    irq_restore(flags);
-
-    tcb_t *next = pick_next_ready();
-    tcb_t *prev = current;
-    current = next;
-    checked_switch_to(prev, next, "CORRUPT sp after mutex_lock() switch_to, sp=");
+    block_current_and_switch(flags, "CORRUPT sp after mutex_lock() switch_to, sp=");
 }
 
 void mutex_unlock(mutex_t *m) {
@@ -185,12 +203,7 @@ unsigned int event_wait(event_t *e, unsigned int mask, int wait_all) {
     }
     e->waiter = current;
     current->state = 1;
-    irq_restore(flags);
-
-    tcb_t *next = pick_next_ready();
-    tcb_t *prev = current;
-    current = next;
-    checked_switch_to(prev, next, "CORRUPT sp after event_wait() switch_to, sp=");
+    block_current_and_switch(flags, "CORRUPT sp after event_wait() switch_to, sp=");
     return e->wake_result;
 }
 
@@ -226,12 +239,7 @@ void queue_send(queue_t *q, unsigned long item) {
         }
         q->send_waiter = current;
         current->state = 1;
-        irq_restore(flags);
-
-        tcb_t *next = pick_next_ready();
-        tcb_t *prev = current;
-        current = next;
-        checked_switch_to(prev, next, "CORRUPT sp after queue_send() switch_to, sp=");
+        block_current_and_switch(flags, "CORRUPT sp after queue_send() switch_to, sp=");
     }
 }
 
@@ -252,11 +260,6 @@ unsigned long queue_recv(queue_t *q) {
         }
         q->recv_waiter = current;
         current->state = 1;
-        irq_restore(flags);
-
-        tcb_t *next = pick_next_ready();
-        tcb_t *prev = current;
-        current = next;
-        checked_switch_to(prev, next, "CORRUPT sp after queue_recv() switch_to, sp=");
+        block_current_and_switch(flags, "CORRUPT sp after queue_recv() switch_to, sp=");
     }
 }

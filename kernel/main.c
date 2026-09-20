@@ -67,6 +67,8 @@ extern int sched_debug_current_idx(void);
 extern int sched_debug_num_tasks(void);
 extern int sched_debug_task_state(int i);
 extern void *sched_debug_task_ptr(int i);
+extern int psci_cpu_on(unsigned long target_cpu_mpidr, unsigned long entry_point_pa);
+extern void secondary_start(void);
 
 /* Moved up from further down in the file so sync_exception_handler_full
    (which needs to inspect these for crash diagnostics) can see them -
@@ -84,6 +86,65 @@ typedef struct {
 } pending_req_t;
 
 static pending_req_t pending[NUM_WORKERS];
+
+static void print_decline(const char *prefix, unsigned long v);
+static int worker_id_of(tcb_t *t);
+
+#define SWITCH_HIST_LEN 16
+typedef struct {
+    const char *site;
+    int prev_id;   /* -1 = busy_task, -2 = unknown */
+    int next_id;
+} switch_hist_t;
+static switch_hist_t switch_hist[SWITCH_HIST_LEN];
+static int switch_hist_idx = 0;
+
+void record_switch(const char *site, void *prev_p, void *next_p) {
+    int pid = (prev_p == &busy_task) ? -1 : worker_id_of((tcb_t *)prev_p);
+    int nid = (next_p == &busy_task) ? -1 : worker_id_of((tcb_t *)next_p);
+    switch_hist[switch_hist_idx].site = site;
+    switch_hist[switch_hist_idx].prev_id = pid;
+    switch_hist[switch_hist_idx].next_id = nid;
+    switch_hist_idx = (switch_hist_idx + 1) % SWITCH_HIST_LEN;
+}
+
+static void print_hexline(const char *prefix, unsigned long v);
+void dump_switch_hist(void);
+
+void check_sp_write(unsigned long *ptr, unsigned long value) {
+    if (ptr == &taskWorker[1].sp) {
+        unsigned long lo = (unsigned long)&taskWorker[1].stack[0];
+        unsigned long hi = lo + STACK_WORDS * sizeof(unsigned long);
+        if (value < lo || value >= hi) {
+            uart_puts("CAUGHT WRITE: switch_to about to write BAD value into taskWorker[1].sp\r\n");
+            print_hexline("  bad value about to be written=", value);
+            dump_switch_hist();
+            while (1) { __asm__ volatile("wfe"); }
+        }
+    }
+}
+
+void report_pre_switch_bad(const char *where, void *next_p, unsigned long bad_sp) {
+    int nid = (next_p == (void *)&busy_task) ? -1 : worker_id_of((tcb_t *)next_p);
+    uart_puts("PRE-SWITCH BAD: next->sp already invalid BEFORE switch_to, site=");
+    uart_puts(where);
+    print_decline("  next_id=", (unsigned long)(long)nid);
+    print_hexline("  bad next->sp=", bad_sp);
+    dump_switch_hist();
+    while (1) { __asm__ volatile("wfe"); }
+}
+
+void dump_switch_hist(void) {
+    uart_puts("CORRUPT sp: recent switch history (oldest first)\r\n");
+    for (int i = 0; i < SWITCH_HIST_LEN; i++) {
+        int idx = (switch_hist_idx + i) % SWITCH_HIST_LEN;
+        if (!switch_hist[idx].site) continue;
+        uart_puts(" site=");
+        uart_puts(switch_hist[idx].site);
+        print_decline("  prev_id=", (unsigned long)(long)switch_hist[idx].prev_id);
+        print_decline("  next_id=", (unsigned long)(long)switch_hist[idx].next_id);
+    }
+}
 
 static void print_hex_into(char *out, unsigned long v) {
     const char *hex = "0123456789abcdef";
@@ -185,7 +246,7 @@ void sync_exception_handler_full(unsigned long *regs) {
             print_hexline(label, regs[i]);
     }
     
-    print_decline("P4 M7: current task = ", (unsigned long)(current == &taskWorker[0] ? 0 : current == &taskWorker[1] ? 1 : current == &taskWorker[2] ? 2 : 99));
+    print_decline("P4 M7: current task = ", (unsigned long)(current == 0 ? 98 : current == &taskWorker[0] ? 0 : current == &taskWorker[1] ? 1 : current == &taskWorker[2] ? 2 : current == &busy_task ? 3 : 99));
     for (int i = 0; i < NUM_WORKERS; i++) {
         print_decline("P4 M7: pending[i].used=", (unsigned long)pending[i].used);
         print_decline("P4 M7: pending[i].done=", (unsigned long)pending[i].done);
@@ -275,10 +336,47 @@ static void dispatch_available_completions(void) {
     irq_restore(flags);
 }
 
+static int worker_id_of(tcb_t *t);
+
 void irq_handler(void) {
     unsigned int id = gic_ack();
 
     if (id == TIMER_IRQ_ID) {
+        /* Full sweep, every tick, regardless of whether a switch is
+           about to happen - to catch the exact tick where some task's
+           sp flips from valid to invalid while it's NOT the one being
+           switched in/out. */
+        /* Ring log of worker2's own sp value at every single tick,
+           regardless of whether it looks valid yet - so once it DOES
+           go bad, we can see the exact last-known-good value and the
+           first-bad value side by side, and cross-reference against
+           the switch history for what ran in between. */
+        static unsigned long w_sp_log[NUM_WORKERS][SWITCH_HIST_LEN];
+        static int w_sp_log_idx[NUM_WORKERS];
+        for (int wi = 0; wi < NUM_WORKERS; wi++) {
+            w_sp_log[wi][w_sp_log_idx[wi]] = taskWorker[wi].sp;
+            w_sp_log_idx[wi] = (w_sp_log_idx[wi] + 1) % SWITCH_HIST_LEN;
+        }
+
+        for (int wi = 0; wi < NUM_WORKERS; wi++) {
+            unsigned long wlo = (unsigned long)&taskWorker[wi].stack[0];
+            unsigned long whi = wlo + STACK_WORDS * sizeof(unsigned long);
+            unsigned long s = taskWorker[wi].sp;
+            if (s != 0 && (s < wlo || s >= whi)) {
+                uart_puts("W SP LOG for the bad worker (oldest first):\r\n");
+                for (int li = 0; li < SWITCH_HIST_LEN; li++) {
+                    int idx = (w_sp_log_idx[wi] + li) % SWITCH_HIST_LEN;
+                    print_hexline("  ", w_sp_log[wi][idx]);
+                }
+                uart_puts("TICK-SWEEP: worker sp went bad while NOT being switched, id=");
+                char idbuf[4]; idbuf[0] = '0' + wi; idbuf[1] = '\r'; idbuf[2] = '\n'; idbuf[3] = 0;
+                uart_puts(idbuf);
+                print_hexline("  bad sp=", s);
+                dump_switch_hist();
+                while (1) { __asm__ volatile("wfe"); }
+            }
+        }
+
         timer_rearm(tick_freq / 2000);
         sched_on_tick(); 
         tcb_t *next = pick_next_ready();
@@ -286,11 +384,55 @@ void irq_handler(void) {
         if (next != current) {
             tcb_t *prev = current;
             current = next;
+            record_switch("irq_handler", prev, next);
+            {
+                unsigned long nlo = (unsigned long)&next->stack[0];
+                unsigned long nhi = nlo + STACK_WORDS * sizeof(unsigned long);
+                if (next->sp < nlo || next->sp >= nhi) {
+                    report_pre_switch_bad("irq_handler", next, next->sp);
+                }
+            }
             switch_to(&prev->sp, next->sp);
             unsigned long lo = (unsigned long)&prev->stack[0];
             unsigned long hi = lo + STACK_WORDS * sizeof(unsigned long);
             if (prev->sp < lo || prev->sp >= hi) {
+                unsigned long mpidr;
+                __asm__ volatile("mrs %0, MPIDR_EL1" : "=r"(mpidr));
                 print_hexline("CORRUPT sp after irq_handler switch_to, sp=", prev->sp);
+                print_hexline("CORRUPT sp: MPIDR_EL1 of offending core=", mpidr);
+                print_decline("CORRUPT sp: prev worker id=", (unsigned long)worker_id_of(prev));
+
+                unsigned long canary_lo = prev->stack[0];
+                unsigned long canary_hi = prev->stack[STACK_WORDS - 1];
+                print_hexline("CORRUPT sp: prev->stack[0] (low canary)=", canary_lo);
+                print_hexline("CORRUPT sp: prev->stack[top] (high canary)=", canary_hi);
+                print_decline("CORRUPT sp: low canary intact (1=yes)=",
+                              (unsigned long)(canary_lo == 0xC0FFEEDEADBEEFULL));
+                print_decline("CORRUPT sp: high canary intact (1=yes)=",
+                              (unsigned long)(canary_hi == 0xC0FFEEDEADBEEFULL));
+
+                /* Does the bad sp value actually fall inside some OTHER
+                   task's own valid stack range? If so, this isn't
+                   corruption at all - it's a prev/next mixup: prev->sp
+                   ended up holding a different task's legitimate sp. */
+                for (int wi = 0; wi < NUM_WORKERS; wi++) {
+                    unsigned long wlo = (unsigned long)&taskWorker[wi].stack[0];
+                    unsigned long whi = wlo + STACK_WORDS * sizeof(unsigned long);
+                    if (prev->sp >= wlo && prev->sp < whi) {
+                        print_decline("CORRUPT sp: MATCH worker=", (unsigned long)wi);
+                    }
+                }
+                print_decline("CORRUPT sp: next worker id=", (unsigned long)worker_id_of(next));
+                unsigned long blo = (unsigned long)&busy_task.stack[0];
+                unsigned long bhi = blo + STACK_WORDS * sizeof(unsigned long);
+                if (prev->sp >= blo && prev->sp < bhi) {
+                    uart_puts("CORRUPT sp: matches busy_task's valid range\r\n");
+                }
+                print_hexline("CORRUPT sp: next->sp for comparison=", next->sp);
+                print_hexline("CORRUPT sp: &prev->stack[0]=", (unsigned long)&prev->stack[0]);
+                print_hexline("CORRUPT sp: &next->stack[0]=", (unsigned long)&next->stack[0]);
+                dump_switch_hist();
+
                 while (1) { __asm__ volatile("wfe"); }
             }
 
@@ -318,6 +460,11 @@ static int worker_id_of(tcb_t *t) {
 
 void worker_entry(void) {
     int id = worker_id_of(current);
+    if (id < 0) {
+        uart_puts("FATAL: worker_id_of(current) returned -1 in worker_entry!\r\n");
+        print_hexline("  current ptr=", (unsigned long)current);
+        while (1) { __asm__ volatile("wfe"); }
+    }
     /* current can move between reading it and using it below only via
        preemption, which is fine here since 'id' is computed once and
        everything after uses the captured value, not 'current' again. */
@@ -341,11 +488,23 @@ void worker_entry(void) {
        both calls in one critical section so the doorbell ring and the
        registration are atomic as a pair. */
     unsigned long flags = irq_disable_save();
-    current->state = 1;
-    irq_restore(flags);
-    while (1) { __asm__ volatile("wfe"); }
+#if DISABLE_REAL_DMA
+    /* Control experiment: fake an instant completion, no real hardware
+       DMA submitted at all, to test whether the device's DMA engine
+       writing to RAM is what's corrupting tcb_t.sp. */
+    static unsigned long fake_cmd_id_counter = 0;
+    fake_cmd_id_counter++;
+    unsigned long cmd_id = fake_cmd_id_counter;
+    for (int i = 0; i < TEST_LEN; i++) dst_buf[id][i] = src_buf[id][i];
+    pending_register(cmd_id, &worker_sem[id]);
+    pending[id].result.cmd_id = cmd_id;
+    pending[id].result.status = 0;
+    pending[id].done = 1;
+    sem_post(&worker_sem[id]);
+#else
     unsigned long cmd_id = accel_submit_copy(src_phys, dst_phys, TEST_LEN);
     pending_register(cmd_id, &worker_sem[id]);
+#endif
     irq_restore(flags);
 
     print_decline("P4 M7: worker submitted cmd_id=", cmd_id);
@@ -414,6 +573,20 @@ static void busy_task_entry(void) {
     }
 }
 
+void secondary_entry_c(void) {
+    unsigned long el;
+    __asm__ volatile("mrs %0, CurrentEL" : "=r"(el));
+    el = (el >> 2) & 0x3;
+    print_decline("CPU1: CurrentEL=", el);
+
+    unsigned long daif;
+    __asm__ volatile("mrs %0, daif" : "=r"(daif));
+    print_hexline("CPU1: DAIF on entry=", daif);
+
+    uart_puts("CPU1 alive\r\n");
+    while (1) { __asm__ volatile("wfe"); }
+}
+
 void kernel_main(unsigned long boot_path) {
     (void)boot_path;
     set_vbar();
@@ -448,6 +621,13 @@ void kernel_main(unsigned long boot_path) {
     gic_enable_irq(TIMER_IRQ_ID);
     gic_enable_irq(DMA_ACCEL_IRQ_ID);
     timer_rearm(tick_freq / 2000);
+
+    unsigned long mpidr;
+    __asm__ volatile("mrs %0, MPIDR_EL1" : "=r"(mpidr));
+    print_hexline("CPU0: MPIDR_EL1=", mpidr);
+
+    int psci_rc = 0; // psci_cpu_on(1, (unsigned long)&secondary_start);
+    print_decline("CPU0: psci_cpu_on rc=", (unsigned long)psci_rc);
 
     unsigned long dummy_sp;
     switch_to(&dummy_sp, taskWorker[0].sp);
