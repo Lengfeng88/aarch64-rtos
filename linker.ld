@@ -18,4 +18,8 @@ SECTIONS
     . = ALIGN(16);
     . += 0x10000;
     __stack_top = .;
+
+    . = ALIGN(16);
+    . += 0x10000;
+    __cpu1_stack_top = .;
 }
