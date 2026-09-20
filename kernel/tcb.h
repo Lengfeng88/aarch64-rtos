@@ -12,7 +12,7 @@ typedef struct {
     void (*entry)(void);
     int state;                      /* 0 = READY, 1 = BLOCKED */
     unsigned int ewma_load;
-} tcb_t;
+} __attribute__((aligned(16))) tcb_t;
 
 /* Offsets taken from the built binary (task_init, task_trampoline, and the
  * stack range checks in main.c). */
@@ -20,5 +20,6 @@ _Static_assert(__builtin_offsetof(tcb_t, sp)    == 0,      "tcb_t.sp must be at 
 _Static_assert(__builtin_offsetof(tcb_t, stack) == 8,      "tcb_t.stack must start at offset 8");
 _Static_assert(__builtin_offsetof(tcb_t, entry) == 0x1010, "tcb_t.entry must be at offset 0x1010");
 _Static_assert(sizeof(tcb_t) == 0x1020,                    "sizeof(tcb_t) changed");
+_Static_assert(_Alignof(tcb_t) >= 16,                     "tcb_t must be 16-byte aligned (SP alignment)");
 
 #endif
