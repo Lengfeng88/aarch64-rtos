@@ -1,0 +1,207 @@
+nohup: ignoring input
+=== Run 1/100 ===
+  -> clean (3/3 workers OK)
+=== Run 2/100 ===
+  -> clean (3/3 workers OK)
+=== Run 3/100 ===
+  -> clean (3/3 workers OK)
+=== Run 4/100 ===
+  -> clean (3/3 workers OK)
+=== Run 5/100 ===
+  -> clean (3/3 workers OK)
+=== Run 6/100 ===
+  -> clean (3/3 workers OK)
+=== Run 7/100 ===
+  -> clean (3/3 workers OK)
+=== Run 8/100 ===
+  -> clean (3/3 workers OK)
+=== Run 9/100 ===
+  -> clean (3/3 workers OK)
+=== Run 10/100 ===
+  -> clean (3/3 workers OK)
+=== Run 11/100 ===
+  -> clean (3/3 workers OK)
+=== Run 12/100 ===
+  -> clean (3/3 workers OK)
+=== Run 13/100 ===
+  -> clean (3/3 workers OK)
+=== Run 14/100 ===
+  -> clean (3/3 workers OK)
+=== Run 15/100 ===
+  -> clean (3/3 workers OK)
+=== Run 16/100 ===
+  -> clean (3/3 workers OK)
+=== Run 17/100 ===
+  -> clean (3/3 workers OK)
+=== Run 18/100 ===
+  -> clean (3/3 workers OK)
+=== Run 19/100 ===
+  -> clean (3/3 workers OK)
+=== Run 20/100 ===
+  -> clean (3/3 workers OK)
+=== Run 21/100 ===
+  -> clean (3/3 workers OK)
+=== Run 22/100 ===
+  -> clean (3/3 workers OK)
+=== Run 23/100 ===
+  -> clean (3/3 workers OK)
+=== Run 24/100 ===
+  -> clean (3/3 workers OK)
+=== Run 25/100 ===
+  -> clean (3/3 workers OK)
+=== Run 26/100 ===
+  -> clean (3/3 workers OK)
+=== Run 27/100 ===
+  -> clean (3/3 workers OK)
+=== Run 28/100 ===
+  -> clean (3/3 workers OK)
+=== Run 29/100 ===
+  -> clean (3/3 workers OK)
+=== Run 30/100 ===
+  -> clean (3/3 workers OK)
+=== Run 31/100 ===
+  -> clean (3/3 workers OK)
+=== Run 32/100 ===
+  -> clean (3/3 workers OK)
+=== Run 33/100 ===
+  -> clean (3/3 workers OK)
+=== Run 34/100 ===
+  -> clean (3/3 workers OK)
+=== Run 35/100 ===
+  -> clean (3/3 workers OK)
+=== Run 36/100 ===
+  -> clean (3/3 workers OK)
+=== Run 37/100 ===
+  -> clean (3/3 workers OK)
+=== Run 38/100 ===
+  -> clean (3/3 workers OK)
+=== Run 39/100 ===
+  -> clean (3/3 workers OK)
+=== Run 40/100 ===
+  -> clean (3/3 workers OK)
+=== Run 41/100 ===
+  -> clean (3/3 workers OK)
+=== Run 42/100 ===
+  -> clean (3/3 workers OK)
+=== Run 43/100 ===
+  -> clean (3/3 workers OK)
+=== Run 44/100 ===
+  -> clean (3/3 workers OK)
+=== Run 45/100 ===
+  -> clean (3/3 workers OK)
+=== Run 46/100 ===
+  -> clean (3/3 workers OK)
+=== Run 47/100 ===
+  -> clean (3/3 workers OK)
+=== Run 48/100 ===
+  -> clean (3/3 workers OK)
+=== Run 49/100 ===
+  -> clean (3/3 workers OK)
+=== Run 50/100 ===
+  -> clean (3/3 workers OK)
+=== Run 51/100 ===
+  -> clean (3/3 workers OK)
+=== Run 52/100 ===
+  -> clean (3/3 workers OK)
+=== Run 53/100 ===
+  -> clean (3/3 workers OK)
+=== Run 54/100 ===
+  -> clean (3/3 workers OK)
+=== Run 55/100 ===
+  -> clean (3/3 workers OK)
+=== Run 56/100 ===
+  -> clean (3/3 workers OK)
+=== Run 57/100 ===
+  -> clean (3/3 workers OK)
+=== Run 58/100 ===
+  -> clean (3/3 workers OK)
+=== Run 59/100 ===
+  -> clean (3/3 workers OK)
+=== Run 60/100 ===
+  -> clean (3/3 workers OK)
+=== Run 61/100 ===
+  -> clean (3/3 workers OK)
+=== Run 62/100 ===
+  -> clean (3/3 workers OK)
+=== Run 63/100 ===
+  -> clean (3/3 workers OK)
+=== Run 64/100 ===
+  -> clean (3/3 workers OK)
+=== Run 65/100 ===
+  -> clean (3/3 workers OK)
+=== Run 66/100 ===
+  -> clean (3/3 workers OK)
+=== Run 67/100 ===
+  -> clean (3/3 workers OK)
+=== Run 68/100 ===
+  -> clean (3/3 workers OK)
+=== Run 69/100 ===
+  -> clean (3/3 workers OK)
+=== Run 70/100 ===
+  -> clean (3/3 workers OK)
+=== Run 71/100 ===
+  -> clean (3/3 workers OK)
+=== Run 72/100 ===
+  -> clean (3/3 workers OK)
+=== Run 73/100 ===
+  -> clean (3/3 workers OK)
+=== Run 74/100 ===
+  -> clean (3/3 workers OK)
+=== Run 75/100 ===
+  -> clean (3/3 workers OK)
+=== Run 76/100 ===
+  -> clean (3/3 workers OK)
+=== Run 77/100 ===
+  -> clean (3/3 workers OK)
+=== Run 78/100 ===
+  -> clean (3/3 workers OK)
+=== Run 79/100 ===
+  -> clean (3/3 workers OK)
+=== Run 80/100 ===
+  -> clean (3/3 workers OK)
+=== Run 81/100 ===
+  -> clean (3/3 workers OK)
+=== Run 82/100 ===
+  -> clean (3/3 workers OK)
+=== Run 83/100 ===
+  -> clean (3/3 workers OK)
+=== Run 84/100 ===
+  -> clean (3/3 workers OK)
+=== Run 85/100 ===
+  -> clean (3/3 workers OK)
+=== Run 86/100 ===
+  -> clean (3/3 workers OK)
+=== Run 87/100 ===
+  -> clean (3/3 workers OK)
+=== Run 88/100 ===
+  -> clean (3/3 workers OK)
+=== Run 89/100 ===
+  -> clean (3/3 workers OK)
+=== Run 90/100 ===
+  -> clean (3/3 workers OK)
+=== Run 91/100 ===
+  -> clean (3/3 workers OK)
+=== Run 92/100 ===
+  -> clean (3/3 workers OK)
+=== Run 93/100 ===
+  -> clean (3/3 workers OK)
+=== Run 94/100 ===
+  -> clean (3/3 workers OK)
+=== Run 95/100 ===
+  -> clean (3/3 workers OK)
+=== Run 96/100 ===
+  -> clean (3/3 workers OK)
+=== Run 97/100 ===
+  -> clean (3/3 workers OK)
+=== Run 98/100 ===
+  -> clean (3/3 workers OK)
+=== Run 99/100 ===
+  -> clean (3/3 workers OK)
+=== Run 100/100 ===
+  -> clean (3/3 workers OK)
+
+=== Summary ===
+Total runs:  100
+Crashed:     0
+Clean (3/3): 100
+Unclear:     0

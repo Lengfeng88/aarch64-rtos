@@ -25,23 +25,19 @@ switch_to:
                                       // part of ITS context (16-byte slot
                                       // to keep sp 16-byte aligned)
 
-    mov     x19, x0           // &old->sp
+        mov     x19, x0           // &old->sp
     mov     x20, x1           // new_sp
     mov     x21, sp           // 旧任务保存完的 frame 基址
 
-#ifdef DEBUG_HOOKS
     mov     x0, x19
     mov     x1, x21
     bl      check_sp_write
-#endif
 
     str     x21, [x19]        // *old_sp_ptr = 旧任务的 sp
 
     mov     sp, x20           // 切到新任务的栈
-#ifdef DEBUG_HOOKS
     mov     x0, x20
     bl      trace_switch_resume
-#endif
 
     ldr     x3,       [sp], #16     // new task's saved daif
     ldp     x29, x30, [sp], #16

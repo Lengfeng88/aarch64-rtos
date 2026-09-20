@@ -1,0 +1,2 @@
+ba62f9d15aa9987ae6f600c0a6150261a31454fee75b55efbd583b7605b7deb9  build/kernel_maskfix.elf
+59e87bf7c58452edb4d61e2ca5126be9fabc6b275e67858048e5da2464341232  build/kernel_nohooks.elf

@@ -342,7 +342,6 @@ void irq_handler(void) {
     unsigned int id = gic_ack();
 
     if (id == TIMER_IRQ_ID) {
-#ifdef DEBUG_HOOKS
         /* Full sweep, every tick, regardless of whether a switch is
            about to happen - to catch the exact tick where some task's
            sp flips from valid to invalid while it's NOT the one being
@@ -378,7 +377,6 @@ void irq_handler(void) {
             }
         }
 
-#endif
         timer_rearm(tick_freq / 2000);
         sched_on_tick(); 
         tcb_t *next = pick_next_ready();
@@ -386,7 +384,6 @@ void irq_handler(void) {
         if (next != current) {
             tcb_t *prev = current;
             current = next;
-#ifdef DEBUG_HOOKS
             record_switch("irq_handler", prev, next);
             {
                 unsigned long nlo = (unsigned long)&next->stack[0];
@@ -395,9 +392,7 @@ void irq_handler(void) {
                     report_pre_switch_bad("irq_handler", next, next->sp);
                 }
             }
-#endif
             switch_to(&prev->sp, next->sp);
-#ifdef DEBUG_HOOKS
             unsigned long lo = (unsigned long)&prev->stack[0];
             unsigned long hi = lo + STACK_WORDS * sizeof(unsigned long);
             if (prev->sp < lo || prev->sp >= hi) {
@@ -441,7 +436,6 @@ void irq_handler(void) {
                 while (1) { __asm__ volatile("wfe"); }
             }
 
-#endif
         }
         return;
     }

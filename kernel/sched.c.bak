@@ -153,7 +153,6 @@ extern void record_switch(const char *site, void *prev_p, void *next_p);
 
 extern void report_pre_switch_bad(const char *where, void *next_p, unsigned long bad_sp);
 
-#ifdef DEBUG_HOOKS
 static inline void checked_switch_to(tcb_t *prev, tcb_t *next, const char *where) {
     record_switch(where, prev, next);
     {
@@ -174,22 +173,14 @@ static inline void checked_switch_to(tcb_t *prev, tcb_t *next, const char *where
         report_corrupt_sp(where, bad_sp);
     }
 }
-#else
-static inline void checked_switch_to(tcb_t *prev, tcb_t *next, const char *where) {
-    (void)where;
-    switch_to(&prev->sp, next->sp);
-}
-#endif
 
 /* Voluntary yield: give up the CPU to another READY task without
    blocking. Back to its original, pre-window-1 form. */
 void yield(void) {
-    unsigned long flags = irq_disable_save();
     tcb_t *next = pick_next_ready();
     if (next != current) {
         tcb_t *prev = current;
         current = next;
         checked_switch_to(prev, next, "CORRUPT sp after yield() switch_to, sp=");
     }
-    irq_restore(flags);
 }

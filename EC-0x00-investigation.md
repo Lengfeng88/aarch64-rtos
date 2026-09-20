@@ -135,3 +135,27 @@ was kept after the `EC=0x0E` investigation closed.
   as a clean-slate architectural fix, but treat it as a new investigation
   (it invalidates the evidence gathered here) rather than a patch on top of
   the current architecture.
+
+## 2026-09-19/20 status (single-core)
+
+Two separate defects found and fixed:
+
+1. switch.S: the check_sp_write hook did `mov x1, x2` before `bl`, so
+   new_sp was lost and `mov sp, x1` used a leftover value. That build
+   never switched tasks. Fixed by keeping old_sp_ptr/new_sp/saved-sp in
+   x19/x20/x21 across the call.
+2. Task-context blocking paths (sem_wait/mutex_lock/event_wait/queue_send/
+   queue_recv/yield) set `current = next` with IRQ open, before
+   switch_to() masked it. A timer IRQ in that window made irq_handler
+   treat `current` as the preempted task and store the running task's SP
+   into the wrong tcb->sp. Fixed with block_current_and_switch() and a
+   masked yield(): pick-next, `current = next` and switch_to() all run
+   with IRQ masked; next==prev handled.
+
+Measured (same harness, 40s/run): 8/30 CORRUPT before the second fix;
+30/30 and then 300/300 clean after (build/kernel_maskfix.elf, logs in
+stress_logs_maskfix300/).
+
+Not proven: that the original intermittent EC=0x00/ELR=0 had this cause.
+It is no longer observed. Diagnostic hooks (check_sp_write, tick sweep,
+record_switch) were still in the build; a hook-free batch is pending.
