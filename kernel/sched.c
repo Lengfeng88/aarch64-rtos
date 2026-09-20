@@ -1,8 +1,8 @@
 #define MAX_TASKS 4
 
 #include "tcb.h"
+#include "percpu.h"
 
-extern tcb_t *current;
 extern void switch_to(unsigned long *old_sp_ptr, unsigned long new_sp);
 extern void report_corrupt_sp(const char *where, unsigned long sp);
 

@@ -1,7 +1,9 @@
 /* M8: multi-core bring-up. Secondary CPUs are started through PSCI, record
  * themselves, and park with IRQ masked. Only CPU0 prints. Nothing here
  * touches the scheduler or the GIC. */
-#define MAX_CPUS       4
+#include "percpu.h"
+cpu_local_t cpu_locals[MAX_CPUS];
+static volatile unsigned long cpu_seen_id[MAX_CPUS];
 #define CPU_STACK_SIZE 4096
 
 extern int  psci_cpu_on(unsigned long target_cpu_mpidr, unsigned long entry_point_pa);
@@ -28,6 +30,8 @@ static void put_hex(unsigned long v) {
 void secondary_main(unsigned long cpu_id) {
     __asm__ volatile("msr daifset, #0xf" ::: "memory");
     if (cpu_id >= MAX_CPUS) { for (;;) __asm__ volatile("wfe"); }
+    percpu_init(cpu_id);
+    cpu_seen_id[cpu_id] = this_cpu()->cpu_id;
 
     unsigned long mpidr;
     __asm__ volatile("mrs %0, mpidr_el1" : "=r"(mpidr));
@@ -64,7 +68,7 @@ void smp_boot_secondaries(void) {
             online++;
             klog("CPU", (long)cpu, 1, ": alive, MPIDR_EL1=");
             put_hex(cpu_mpidr[cpu]);
-            uart_puts("\r\n");
+            klog(" this_cpu()->cpu_id=", (long)cpu_seen_id[cpu], 1, "\r\n");
         } else {
             klog("CPU", (long)cpu, 1, ": did NOT come up (timeout)\r\n");
         }

@@ -1,5 +1,6 @@
 
 #include "tcb.h"
+#include "percpu.h"
 
 typedef struct {
     volatile int count;
@@ -9,7 +10,6 @@ typedef struct {
 } sem_t;
 
 extern void switch_to(unsigned long *old_sp_ptr, unsigned long new_sp);
-extern tcb_t *current;
 extern tcb_t *pick_next_ready(void);
 extern void report_corrupt_sp(const char *where, unsigned long sp);
 

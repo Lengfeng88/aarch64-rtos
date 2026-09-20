@@ -1,9 +1,9 @@
 #define CANARY 0xC0FFEEDEADBEEFULL
 
 #include "tcb.h"
+#include "percpu.h"
 
 extern void switch_to(unsigned long *old_sp_ptr, unsigned long new_sp);
-extern tcb_t *current;
 
 void task_trampoline(void) {
     /* Kept as a harmless extra safety net - now redundant with

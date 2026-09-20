@@ -16,6 +16,7 @@ extern unsigned long sched_debug_select_count(int i);
 #define NUM_WORKERS 3
 
 #include "tcb.h"
+#include "percpu.h"
 
 typedef struct {
     volatile int count;
@@ -68,7 +69,6 @@ extern void smp_boot_secondaries(void);
    they're still defined exactly once, just earlier. */
 static tcb_t taskWorker[NUM_WORKERS];
 static tcb_t busy_task;
-tcb_t *current;
 
 typedef struct {
     unsigned long cmd_id;
@@ -587,6 +587,7 @@ void secondary_entry_c(void) {
 }
 
 void kernel_main(unsigned long boot_path) {
+    percpu_init(0);
     (void)boot_path;
     set_vbar();
     uart_puts("P4 M7: full integration test boot OK\r\n");
