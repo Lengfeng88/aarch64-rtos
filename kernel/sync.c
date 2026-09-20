@@ -1,13 +1,5 @@
-#define STACK_WORDS 512
 
-typedef struct {
-    unsigned long sp;
-    unsigned long stack[STACK_WORDS];
-    const char *name;
-    void (*entry)(void);
-    int state;   /* 0 = READY, 1 = BLOCKED */
-    unsigned int ewma_load;
-} tcb_t;
+#include "tcb.h"
 
 typedef struct {
     volatile int count;

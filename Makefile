@@ -6,6 +6,7 @@ DEBUG_HOOKS ?= 0
 ifeq ($(DEBUG_HOOKS),1)
 CFLAGS += -DDEBUG_HOOKS
 endif
+CFLAGS += -MMD -MP
 
 OBJS = boot/boot.o kernel/vectors.o kernel/uart.o kernel/switch.o kernel/task.o \
        kernel/gic.o kernel/sched.o kernel/sync.o kernel/pci.o kernel/accel.o kernel/psci.o kernel/smp.o kernel/main.o
@@ -26,4 +27,6 @@ run: build/kernel.elf
 	$(QEMU) -M virt -cpu cortex-a53 -nographic -device dma-accel -kernel build/kernel.elf
 
 clean:
-	rm -f $(OBJS) build/kernel.elf
+	rm -f $(OBJS) $(OBJS:.o=.d) build/kernel.elf
+
+-include $(OBJS:.o=.d)

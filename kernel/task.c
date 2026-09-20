@@ -1,14 +1,6 @@
-#define STACK_WORDS 512
 #define CANARY 0xC0FFEEDEADBEEFULL
 
-typedef struct {
-    unsigned long sp;
-    unsigned long stack[STACK_WORDS];
-    const char *name;
-    void (*entry)(void);
-    int state;
-    unsigned int ewma_load;
-} tcb_t;
+#include "tcb.h"
 
 extern void switch_to(unsigned long *old_sp_ptr, unsigned long new_sp);
 extern tcb_t *current;

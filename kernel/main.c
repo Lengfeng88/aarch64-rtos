@@ -9,21 +9,13 @@ extern void sched_on_tick(void);
 extern unsigned long sched_debug_select_count(int i);
 
 
-#define STACK_WORDS 512
 #define TIMER_IRQ_ID 30
 #define DMA_ACCEL_IRQ_ID 37
 #define IRQ_DMA_DONE (1u << 0)
 #define DMA_ACCEL_OK 0x00
 #define NUM_WORKERS 3
 
-typedef struct {
-    unsigned long sp;
-    unsigned long stack[STACK_WORDS];
-    const char *name;
-    void (*entry)(void);
-    int state;
-    unsigned int ewma_load;   
-} tcb_t;
+#include "tcb.h"
 
 typedef struct {
     volatile int count;
