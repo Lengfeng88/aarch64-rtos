@@ -2,15 +2,11 @@
 #include "tcb.h"
 #include "percpu.h"
 
-typedef struct {
-    volatile int count;
-    tcb_t *waiter;   /* single-waiter simplification: fine for a demo
-                        with one producer and one consumer; a real
-                        implementation would use a wait queue here */
-} sem_t;
+#include "sync.h"
 
 extern void switch_to(unsigned long *old_sp_ptr, unsigned long new_sp);
 extern tcb_t *pick_next_ready(void);
+extern void sched_wake(tcb_t *t);
 extern void report_corrupt_sp(const char *where, unsigned long sp);
 
 static inline unsigned long irq_disable_save(void) {
@@ -84,33 +80,36 @@ static void block_current_and_switch(unsigned long flags, const char *where) {
 void sem_init(sem_t *s, int initial_count) {
     s->count = initial_count;
     s->waiter = 0;
+    s->lock.locked = 0;
 }
 
 /* Back to its original, pre-window-1 form. */
 void sem_wait(sem_t *s) {
-    unsigned long flags = irq_disable_save();
+    unsigned long flags = spin_lock_irqsave(&s->lock);
     if (s->count > 0) {
         s->count--;
-        irq_restore(flags);
+        spin_unlock_irqrestore(&s->lock, flags);
         return;
     }
     s->waiter = current;
     current->state = 1;
+    /* Drop the semaphore lock but stay IRQ-masked: block_current_and_switch()
+       restores `flags` once this task runs again. A wake-up that lands before
+       we switch away is handled by its next == prev branch. */
+    spin_unlock(&s->lock);
     block_current_and_switch(flags, "CORRUPT sp after sem_wait() switch_to, sp=");
-    /* Resumes here once sem_post() marks us READY again and the
-       scheduler (preemptive or another voluntary yield) switches back. */
 }
 
 void sem_post(sem_t *s) {
-    unsigned long flags = irq_disable_save();
+    unsigned long flags = spin_lock_irqsave(&s->lock);
     if (s->waiter) {
         tcb_t *w = s->waiter;
         s->waiter = 0;
-        w->state = 0;
+        sched_wake(w);
     } else {
         s->count++;
     }
-    irq_restore(flags);
+    spin_unlock_irqrestore(&s->lock, flags);
 }
 
 typedef struct {

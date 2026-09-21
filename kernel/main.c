@@ -18,10 +18,7 @@ extern unsigned long sched_debug_select_count(int i);
 #include "tcb.h"
 #include "percpu.h"
 
-typedef struct {
-    volatile int count;
-    tcb_t *waiter;
-} sem_t;
+#include "sync.h"
 
 typedef struct {
     unsigned int bus, dev, func;

@@ -2,6 +2,7 @@
  * themselves, and park with IRQ masked. Only CPU0 prints. Nothing here
  * touches the scheduler or the GIC. */
 #include "percpu.h"
+#include "sync.h"
 cpu_local_t cpu_locals[MAX_CPUS];
 static volatile unsigned long cpu_seen_id[MAX_CPUS];
 #define CPU_STACK_SIZE 4096
@@ -26,6 +27,28 @@ static tcb_t test_tcb[MAX_CPUS][2];
 static volatile unsigned long test_progress[MAX_CPUS][2];
 static void test_task_a(void) { unsigned long c = this_cpu()->cpu_id; for (;;) test_progress[c][0]++; }
 static void test_task_b(void) { unsigned long c = this_cpu()->cpu_id; for (;;) test_progress[c][1]++; }
+
+/* Step D1: cross-CPU semaphore ping-pong. The ping task lives on CPU1, the pong
+   task on CPU2 (needs -smp 3 or more); every wake-up crosses CPUs. */
+#define PP_ROUNDS 2000UL
+static sem_t pp_to_pong, pp_to_ping;            /* zero-initialised = count 0, unlocked */
+static tcb_t pp_tcb[2];
+static volatile unsigned long pp_rounds_done, pp_pongs;
+static void pp_ping_task(void) {
+    for (unsigned long i = 0; i < PP_ROUNDS; i++) {
+        sem_post(&pp_to_pong);
+        sem_wait(&pp_to_ping);
+        pp_rounds_done = i + 1;
+    }
+    for (;;) __asm__ volatile("wfe");
+}
+static void pp_pong_task(void) {
+    for (;;) {
+        sem_wait(&pp_to_pong);
+        pp_pongs++;
+        sem_post(&pp_to_ping);
+    }
+}
 extern void gic_enable_irq(unsigned int id);
 
 /* boot.S computes each CPU's stack top as cpu_stacks + (id + 1) * 4096. */
@@ -93,6 +116,15 @@ void secondary_main(unsigned long cpu_id) {
         t->name = "sectest";
         task_init(t, k == 0 ? test_task_a : test_task_b);
         sched_register_on(cpu_id, t);
+    }
+    if (cpu_id == 1) {
+        pp_tcb[0].name = "ping";
+        task_init(&pp_tcb[0], pp_ping_task);
+        sched_register_on(cpu_id, &pp_tcb[0]);
+    } else if (cpu_id == 2) {
+        pp_tcb[1].name = "pong";
+        task_init(&pp_tcb[1], pp_pong_task);
+        sched_register_on(cpu_id, &pp_tcb[1]);
     }
 
     /* M9 step 2: this core's own GIC interface + physical timer. Its tick only
@@ -184,4 +216,6 @@ void smp_report_irq_counts(void) {
         }
         klog("", 0, 0, "\r\n");
     }
+    klog("PINGPONG rounds=", (long)pp_rounds_done, 1, "");
+    klog(" pongs=", (long)pp_pongs, 1, "\r\n");
 }

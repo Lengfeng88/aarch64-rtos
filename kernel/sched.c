@@ -2,6 +2,7 @@
 
 #include "tcb.h"
 #include "percpu.h"
+#include "spinlock.h"
 
 extern void switch_to(unsigned long *old_sp_ptr, unsigned long new_sp);
 extern void report_corrupt_sp(const char *where, unsigned long sp);
@@ -13,6 +14,7 @@ typedef struct {
     int num_tasks;
     int current_idx;
     unsigned long select_count[MAX_TASKS];
+    spinlock_t lock;   /* protects tasks[], task state changes and current_idx */
 } runqueue_t;
 
 static runqueue_t runqueues[MAX_CPUS];
@@ -38,10 +40,14 @@ static inline void irq_restore(unsigned long flags) {
 
 void sched_register_on(unsigned long cpu, tcb_t *t) {
     runqueue_t *rq = &runqueues[cpu];
-    if (rq->num_tasks >= MAX_TASKS) return;
-    rq->tasks[rq->num_tasks] = t;
-    if (cpu == this_cpu()->cpu_id && t == current) rq->current_idx = rq->num_tasks;
-    rq->num_tasks++;
+    unsigned long f = spin_lock_irqsave(&rq->lock);
+    if (rq->num_tasks < MAX_TASKS) {
+        rq->tasks[rq->num_tasks] = t;
+        t->cpu = (unsigned int)cpu;
+        if (cpu == this_cpu()->cpu_id && t == current) rq->current_idx = rq->num_tasks;
+        rq->num_tasks++;
+    }
+    spin_unlock_irqrestore(&rq->lock, f);
 }
 
 void sched_register(tcb_t *t) {
@@ -125,7 +131,21 @@ static sched_policy_t policy_load_aware = { load_aware_select_next, ewma_on_tick
 static sched_policy_t *active_policy = &policy_load_aware;
 
 tcb_t *pick_next_ready(void) {
-    return active_policy->select_next();
+    runqueue_t *rq = this_rq();
+    unsigned long f = spin_lock_irqsave(&rq->lock);
+    tcb_t *n = active_policy->select_next();
+    spin_unlock_irqrestore(&rq->lock, f);
+    return n;
+}
+
+/* Mark a task READY from any CPU. Tasks do not migrate: the task stays on its
+   home CPU's run queue, so only that queue's lock is needed. */
+void sched_wake(tcb_t *t) {
+    runqueue_t *rq = &runqueues[t->cpu];
+    unsigned long f = spin_lock_irqsave(&rq->lock);
+    t->state = 0;
+    spin_unlock_irqrestore(&rq->lock, f);
+    __asm__ volatile("dsb sy\n\tsev" ::: "memory");
 }
 
 void sched_on_tick(void) {
