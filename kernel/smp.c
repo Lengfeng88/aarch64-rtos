@@ -28,6 +28,27 @@ static void put_hex(unsigned long v) {
     for (int i = 60; i >= 0; i -= 4) uart_putc(d[(v >> i) & 0xf]);
 }
 
+#ifdef SMP_SELFTEST
+#include "spinlock.h"
+#define SELFTEST_N 200000UL
+static volatile unsigned long st_go;
+static volatile unsigned long st_done[MAX_CPUS];
+static volatile unsigned long st_plain, st_locked;
+static spinlock_t st_lock = SPINLOCK_INIT;
+
+/* Runs with IRQ masked on every participating core. */
+static void selftest_body(unsigned long cpu) {
+    for (unsigned long i = 0; i < SELFTEST_N; i++) st_plain++;      /* unprotected */
+    for (unsigned long i = 0; i < SELFTEST_N; i++) {                /* protected   */
+        spin_lock(&st_lock);
+        st_locked++;
+        spin_unlock(&st_lock);
+    }
+    __asm__ volatile("dsb sy" ::: "memory");
+    st_done[cpu] = 1;
+}
+#endif
+
 /* Runs on CPUs 1..3, entered from boot.S with x0 = cpu id. */
 void secondary_main(unsigned long cpu_id) {
     __asm__ volatile("msr daifset, #0xf" ::: "memory");
@@ -44,6 +65,10 @@ void secondary_main(unsigned long cpu_id) {
     cpu_alive[cpu_id] = 1;
     __asm__ volatile("dsb sy\n\tsev" ::: "memory");
 
+#ifdef SMP_SELFTEST
+    while (!st_go) { }
+    selftest_body(cpu_id);
+#endif
     /* M9 step 2: this core's own GIC interface + physical timer. Its tick only
      * counts (secondary_irq in main.c); it never touches scheduler state. */
     gic_init_secondary();
@@ -87,6 +112,22 @@ void smp_boot_secondaries(void) {
         }
     }
     klog("CPUs online: ", (long)online, 1, "\r\n");
+
+#ifdef SMP_SELFTEST
+    st_go = 1;
+    __asm__ volatile("dsb sy" ::: "memory");
+    selftest_body(0);
+    for (unsigned long c = 1; c < MAX_CPUS; c++)
+        if (cpu_alive[c]) while (!st_done[c]) { }
+    {
+        unsigned long expected = (unsigned long)online * SELFTEST_N;
+        klog("SELFTEST cpus=", (long)online, 1, "");
+        klog(" expected=", (long)expected, 1, "");
+        klog(" plain=", (long)st_plain, 1, "");
+        klog(" locked=", (long)st_locked, 1, "");
+        klog(" LOCK_OK=", (long)(st_locked == expected), 1, "\r\n");
+    }
+#endif
 }
 
 /* CPU0 only. Rate-limited: one line every 64 calls. */
