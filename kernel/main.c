@@ -339,6 +339,13 @@ static void secondary_irq(unsigned int id) {
     if (id == TIMER_IRQ_ID) {
         this_cpu()->irq_count++;
         timer_rearm(tick_freq / 2000);
+        /* Step B: run this core's own scheduler path, but never switch. */
+        sched_on_tick();
+        {
+            tcb_t *n = pick_next_ready();
+            this_cpu()->sched_calls++;
+            if (n != current) this_cpu()->unexpected_switch++;
+        }
     }
     gic_eoi(id);
 }
