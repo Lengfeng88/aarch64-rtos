@@ -17,6 +17,15 @@ extern void sched_register_on(unsigned long cpu, tcb_t *t);
 /* One idle task per core: it stands for the boot context the core is already
    running on, so it needs no stack of its own. */
 static tcb_t idle_tcb[MAX_CPUS];
+
+extern void task_init(tcb_t *t, void (*entry)(void));
+
+/* Step C: two independent, pinned CPU-bound test tasks per secondary core.
+   They share nothing and print nothing; CPU0 reports their progress. */
+static tcb_t test_tcb[MAX_CPUS][2];
+static volatile unsigned long test_progress[MAX_CPUS][2];
+static void test_task_a(void) { unsigned long c = this_cpu()->cpu_id; for (;;) test_progress[c][0]++; }
+static void test_task_b(void) { unsigned long c = this_cpu()->cpu_id; for (;;) test_progress[c][1]++; }
 extern void gic_enable_irq(unsigned int id);
 
 /* boot.S computes each CPU's stack top as cpu_stacks + (id + 1) * 4096. */
@@ -79,6 +88,12 @@ void secondary_main(unsigned long cpu_id) {
     idle_tcb[cpu_id].state = 0;
     current = &idle_tcb[cpu_id];
     sched_register_on(cpu_id, &idle_tcb[cpu_id]);
+    for (int k = 0; k < 2; k++) {
+        tcb_t *t = &test_tcb[cpu_id][k];
+        t->name = "sectest";
+        task_init(t, k == 0 ? test_task_a : test_task_b);
+        sched_register_on(cpu_id, t);
+    }
 
     /* M9 step 2: this core's own GIC interface + physical timer. Its tick only
      * counts (secondary_irq in main.c); it never touches scheduler state. */
@@ -157,5 +172,16 @@ void smp_report_irq_counts(void) {
         }
         klog("SCHED secondaries: calls=", (long)calls, 1, "");
         klog(" unexpected=", (long)bad, 1, "\r\n");
+    }
+    {
+        unsigned long sw = 0;
+        for (unsigned long c = 1; c < MAX_CPUS; c++) sw += cpu_locals[c].context_switches;
+        klog("SECTEST switches=", (long)sw, 1, "");
+        for (unsigned long c = 1; c < MAX_CPUS; c++) {
+            klog(" cpu", (long)c, 1, "=");
+            klog("", (long)test_progress[c][0], 1, ",");
+            klog("", (long)test_progress[c][1], 1, "");
+        }
+        klog("", 0, 0, "\r\n");
     }
 }

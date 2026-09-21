@@ -10,6 +10,7 @@ typedef struct {
     volatile unsigned long irq_count;
     volatile unsigned long sched_calls;
     volatile unsigned long unexpected_switch;
+    volatile unsigned long context_switches;
 } __attribute__((aligned(64))) cpu_local_t;
 _Static_assert(sizeof(cpu_local_t) == 64, "cpu_local_t must be exactly one cache line");
 
