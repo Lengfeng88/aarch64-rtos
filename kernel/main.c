@@ -63,6 +63,7 @@ extern void *sched_debug_task_ptr(int i);
 extern int psci_cpu_on(unsigned long target_cpu_mpidr, unsigned long entry_point_pa);
 extern void secondary_start(void);
 extern void smp_boot_secondaries(void);
+extern void smp_report_irq_counts(void);
 
 /* Moved up from further down in the file so sync_exception_handler_full
    (which needs to inspect these for crash diagnostics) can see them -
@@ -331,10 +332,23 @@ static void dispatch_available_completions(void) {
 
 static int worker_id_of(tcb_t *t);
 
+/* Secondary cores: count the tick, re-arm this core's timer, EOI. No scheduler
+   state (all_tasks/current_idx/...) may be touched from here yet. */
+static void secondary_irq(unsigned int id) {
+    if (id >= 1020) return;            /* spurious: nothing to EOI */
+    if (id == TIMER_IRQ_ID) {
+        this_cpu()->irq_count++;
+        timer_rearm(tick_freq / 2000);
+    }
+    gic_eoi(id);
+}
+
 void irq_handler(void) {
     unsigned int id = gic_ack();
+    if (this_cpu()->cpu_id != 0) { secondary_irq(id); return; }
 
     if (id == TIMER_IRQ_ID) {
+        this_cpu()->irq_count++;
 #ifdef DEBUG_HOOKS
         /* Full sweep, every tick, regardless of whether a switch is
            about to happen - to catch the exact tick where some task's
@@ -563,6 +577,7 @@ static void busy_task_entry(void) {
         counter++;
         if ((counter & 0xFFFFF) == 0) {
             print_decline("BUSY TASK ewma=", (unsigned long)busy_task.ewma_load);
+            smp_report_irq_counts();
             print_decline("SELECT busy=", sched_debug_select_count(3));   // busy_task是第4个注册的，index=3
             print_decline("SELECT w0=", sched_debug_select_count(0));
             print_decline("SELECT w1=", sched_debug_select_count(1));

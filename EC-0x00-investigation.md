@@ -166,8 +166,3 @@ to build/kernel_maskfix.elf); default `make` has no hooks. Hook-free
 build/kernel_nohooks.elf: 100/100 clean, 0 crashed, 0 unclear
 (stress_logs_nohooks100/). Combined with 300/300 on the instrumented build.
 Scope: single CPU, 3 workers + busy task, 40 s per run.
-
-## Rebuilding pre-M8 tags
-p4-single-core-baseline and p4-single-core-maskfix-300 reference
-__cpu1_stack_top, which linker.ld only defines from the commit that adds it.
-To rebuild them: git checkout <tag> && git checkout p4-m9a -- linker.ld && make

@@ -7,7 +7,9 @@
 typedef struct {
     unsigned long cpu_id;
     tcb_t *curr;
-} cpu_local_t;
+    volatile unsigned long irq_count;
+} __attribute__((aligned(64))) cpu_local_t;
+_Static_assert(sizeof(cpu_local_t) == 64, "cpu_local_t must be exactly one cache line");
 
 extern cpu_local_t cpu_locals[MAX_CPUS];
 

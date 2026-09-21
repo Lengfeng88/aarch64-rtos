@@ -39,3 +39,10 @@ unsigned int gic_ack(void) {
 void gic_eoi(unsigned int id) {
     GICC_EOIR = id;
 }
+
+/* GICC (CPU interface) registers are banked per CPU: every secondary core
+   must set up its own. The distributor is enabled once, by CPU0. */
+void gic_init_secondary(void) {
+    GICC_PMR  = 0xFF;
+    GICC_CTLR = 1;
+}

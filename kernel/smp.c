@@ -11,6 +11,8 @@ extern void secondary_start(void);
 extern void uart_puts(const char *s);
 extern void uart_putc(char c);
 extern void klog(const char *prefix, long val, int has_val, const char *suffix);
+extern void gic_init_secondary(void);
+extern void gic_enable_irq(unsigned int id);
 
 /* boot.S computes each CPU's stack top as cpu_stacks + (id + 1) * 4096. */
 unsigned char cpu_stacks[MAX_CPUS][CPU_STACK_SIZE] __attribute__((aligned(16)));
@@ -42,7 +44,18 @@ void secondary_main(unsigned long cpu_id) {
     cpu_alive[cpu_id] = 1;
     __asm__ volatile("dsb sy\n\tsev" ::: "memory");
 
-    for (;;) __asm__ volatile("wfe");
+    /* M9 step 2: this core's own GIC interface + physical timer. Its tick only
+     * counts (secondary_irq in main.c); it never touches scheduler state. */
+    gic_init_secondary();
+    gic_enable_irq(30);
+    {
+        unsigned long f;
+        __asm__ volatile("mrs %0, cntfrq_el0" : "=r"(f));
+        __asm__ volatile("msr cntp_tval_el0, %0" :: "r"(f / 2000));
+        __asm__ volatile("msr cntp_ctl_el0, %0" :: "r"(1UL));
+    }
+    __asm__ volatile("msr daifclr, #2" ::: "memory");
+    for (;;) __asm__ volatile("wfi");
 }
 
 /* Runs on CPU0, IRQ still masked, before the first task is started. */
@@ -74,4 +87,14 @@ void smp_boot_secondaries(void) {
         }
     }
     klog("CPUs online: ", (long)online, 1, "\r\n");
+}
+
+/* CPU0 only. Rate-limited: one line every 64 calls. */
+void smp_report_irq_counts(void) {
+    static unsigned long calls;
+    if (++calls % 64) return;
+    klog("IRQ counts: cpu0=", (long)cpu_locals[0].irq_count, 1, "");
+    klog(" cpu1=", (long)cpu_locals[1].irq_count, 1, "");
+    klog(" cpu2=", (long)cpu_locals[2].irq_count, 1, "");
+    klog(" cpu3=", (long)cpu_locals[3].irq_count, 1, "\r\n");
 }
