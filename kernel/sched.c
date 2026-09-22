@@ -6,6 +6,8 @@
 
 extern void switch_to(unsigned long *old_sp_ptr, unsigned long new_sp);
 extern void report_corrupt_sp(const char *where, unsigned long sp);
+extern int smp_online;
+extern void klog(const char *prefix, long val, int has_val, const char *suffix);
 
 /* Per-CPU run queue. Only the owning CPU touches its own queue for now
    (no locking yet); tasks are still all registered on CPU0. */
@@ -146,6 +148,85 @@ void sched_wake(tcb_t *t) {
     t->state = 0;
     spin_unlock_irqrestore(&rq->lock, f);
     __asm__ volatile("dsb sy\n\tsev" ::: "memory");
+}
+
+/* M12: migrate a READY task from its current home CPU to dst_cpu.
+   Caller must NOT hold either rq's lock. Only migrates tasks that are
+   actually READY and sitting in their rq's tasks[] array - a task
+   that is `current` on some CPU, or BLOCKED waiting on a semaphore,
+   is never touched (BLOCKED tasks still rely on sched_wake's
+   home-CPU-never-changes invariant).
+   Lock order: always lock the lower CPU id's rq first, to avoid a new
+   deadlock ordering against any future cross-rq path.
+   dst_cpu must be a secondary (1..MAX_CPUS-1) for now - CPU0's own
+   wfe/idle path as a migration target hasn't been verified yet. */
+int sched_migrate(tcb_t *t, unsigned long dst_cpu) {
+    unsigned long src_cpu = t->cpu;
+    if (dst_cpu == src_cpu || dst_cpu == 0) return -1;
+
+    unsigned long lo = src_cpu < dst_cpu ? src_cpu : dst_cpu;
+    unsigned long hi = src_cpu < dst_cpu ? dst_cpu : src_cpu;
+    runqueue_t *rq_lo = &runqueues[lo];
+    runqueue_t *rq_hi = &runqueues[hi];
+
+    unsigned long f_lo = spin_lock_irqsave(&rq_lo->lock);
+    spin_lock(&rq_hi->lock); /* nested, same core, IRQ already masked by f_lo */
+
+    runqueue_t *src = &runqueues[src_cpu];
+    runqueue_t *dst = &runqueues[dst_cpu];
+    int ok = 0;
+
+    if (t->state == 0 && t != current) {
+        int idx = -1;
+        for (int i = 0; i < src->num_tasks; i++) {
+            if (src->tasks[i] == t) { idx = i; break; }
+        }
+        if (idx >= 0 && dst->num_tasks < MAX_TASKS) {
+            src->tasks[idx] = src->tasks[src->num_tasks - 1];
+            src->num_tasks--;
+            if (src->current_idx >= src->num_tasks) src->current_idx = 0;
+
+            dst->tasks[dst->num_tasks] = t;
+            t->cpu = (unsigned int)dst_cpu;
+            dst->num_tasks++;
+            ok = 1;
+        }
+    }
+
+    spin_unlock(&rq_hi->lock);
+    spin_unlock_irqrestore(&rq_lo->lock, f_lo);
+    if (ok) {
+        __asm__ volatile("dsb sy\n\tsev" ::: "memory");
+        klog("LB: migrated task, src=", (long)src_cpu, 1, "");
+        klog(" dst=", (long)dst_cpu, 1, "\r\n");
+    }
+    return ok ? 0 : -1;
+}
+
+/* M12: very simple first cut - scan CPU1..smp_online-1's num_tasks, if
+   busiest/idlest differ enough, move one READY task busiest -> idlest.
+   Not wired to any automatic trigger yet; called manually under
+   LOAD_BALANCE_SELFTEST to validate sched_migrate() in isolation. */
+void sched_load_balance_pass(void) {
+    int busiest = -1, idlest = -1;
+    int busiest_n = -1, idlest_n = 1 << 30;
+    for (int cpu = 1; cpu < smp_online; cpu++) {
+        int n = runqueues[cpu].num_tasks;
+        if (n > busiest_n) { busiest_n = n; busiest = cpu; }
+        if (n < idlest_n)  { idlest_n = n; idlest = cpu; }
+    }
+    if (busiest < 0 || idlest < 0 || busiest == idlest) return;
+    if (busiest_n - idlest_n < 2) return;
+
+    unsigned long f = spin_lock_irqsave(&runqueues[busiest].lock);
+    tcb_t *victim = 0;
+    for (int i = 0; i < runqueues[busiest].num_tasks; i++) {
+        tcb_t *t = runqueues[busiest].tasks[i];
+        if (t->state == 0 && t != current) { victim = t; break; }
+    }
+    spin_unlock_irqrestore(&runqueues[busiest].lock, f);
+
+    if (victim) sched_migrate(victim, (unsigned long)idlest);
 }
 
 void sched_on_tick(void) {

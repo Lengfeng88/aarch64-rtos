@@ -64,6 +64,7 @@ extern void smp_boot_secondaries(void);
 extern int smp_online;
 extern void sched_register_on(unsigned long cpu, tcb_t *t);
 extern void klog(const char *prefix, long val, int has_val, const char *suffix);
+extern void sched_load_balance_pass(void);
 extern void smp_report_irq_counts(void);
 
 /* Moved up from further down in the file so sync_exception_handler_full
@@ -597,6 +598,10 @@ static void busy_task_entry(void) {
             print_decline("SELECT w0=", sched_debug_select_count(0));
             print_decline("SELECT w1=", sched_debug_select_count(1));
             print_decline("SELECT w2=", sched_debug_select_count(2));
+#ifdef LOAD_BALANCE_SELFTEST
+            uart_puts("LB: running load_balance_pass\r\n");
+            sched_load_balance_pass();
+#endif
 }
         /* 故意不yield() —— 只靠timer抢占它 */
     }

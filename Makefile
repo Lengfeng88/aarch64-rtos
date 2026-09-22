@@ -13,6 +13,11 @@ ifeq ($(SMP_SELFTEST),1)
 CFLAGS += -DSMP_SELFTEST
 endif
 
+LOAD_BALANCE_SELFTEST ?= 0
+ifeq ($(LOAD_BALANCE_SELFTEST),1)
+CFLAGS += -DLOAD_BALANCE_SELFTEST
+endif
+
 OBJS = boot/boot.o kernel/vectors.o kernel/uart.o kernel/switch.o kernel/task.o \
        kernel/gic.o kernel/sched.o kernel/sync.o kernel/pci.o kernel/accel.o kernel/psci.o kernel/smp.o kernel/main.o
 
