@@ -176,7 +176,14 @@ int sched_migrate(tcb_t *t, unsigned long dst_cpu) {
     runqueue_t *dst = &runqueues[dst_cpu];
     int ok = 0;
 
-    if (t->state == 0 && t != current) {
+    /* Same bug/fix as sched_load_balance_pass's victim scan: `current`
+       is the CALLER's per-CPU curr, not src_cpu's. A task genuinely
+       executing on src_cpu must never be pulled out from under it -
+       compare against cpu_locals[src_cpu].curr, not the caller's own
+       current. Defends sched_migrate() itself even if some future
+       caller doesn't already filter this the way
+       sched_load_balance_pass does. */
+    if (t->state == 0 && t != cpu_locals[src_cpu].curr) {
         int idx = -1;
         for (int i = 0; i < src->num_tasks; i++) {
             if (src->tasks[i] == t) { idx = i; break; }
@@ -218,11 +225,22 @@ void sched_load_balance_pass(void) {
     if (busiest < 0 || idlest < 0 || busiest == idlest) return;
     if (busiest_n - idlest_n < 2) return;
 
+    /* BUG FIX (found via 30x regression, run 20/30 crashed with a
+       SYNC EXCEPTION / unresolved-SP fault): `current` is a per-CPU
+       macro (this_cpu()->curr) - on CPU0, comparing against it here
+       only ever matches CPU0's own running task, never the task
+       actually executing on the busiest CPU (e.g. CPU1). That let a
+       task genuinely running on CPU1 be selected as a migration
+       victim and yanked into CPU3's rq mid-execution, corrupting its
+       context. Must compare against the busiest CPU's OWN current
+       task, read directly from cpu_locals[] (a plain global array,
+       safe to read cross-core here - only ever written by the
+       owning CPU itself via percpu_init/switch_to). */
     unsigned long f = spin_lock_irqsave(&runqueues[busiest].lock);
     tcb_t *victim = 0;
     for (int i = 0; i < runqueues[busiest].num_tasks; i++) {
         tcb_t *t = runqueues[busiest].tasks[i];
-        if (t->state == 0 && t != current && !t->pinned) { victim = t; break; }
+        if (t->state == 0 && t != cpu_locals[busiest].curr && !t->pinned) { victim = t; break; }
     }
     spin_unlock_irqrestore(&runqueues[busiest].lock, f);
 
