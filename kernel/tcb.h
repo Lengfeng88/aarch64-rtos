@@ -13,6 +13,11 @@ typedef struct {
     int state;                      /* 0 = READY, 1 = BLOCKED */
     unsigned int ewma_load;
     unsigned int cpu;               /* home CPU: the run queue that owns this task */
+    unsigned int pinned;             /* M12: nonzero = sched_load_balance_pass must never
+                                         pick this task as a migration victim (e.g. ping/pong,
+                                         which rely on staying on their registered home CPU).
+                                         0 = migratable. Falls in tcb_t's existing tail padding
+                                         (0x1024-0x1030), so sizeof(tcb_t) is unchanged. */
 } __attribute__((aligned(16))) tcb_t;
 
 /* Offsets taken from the built binary (task_init, task_trampoline, and the
@@ -22,6 +27,7 @@ _Static_assert(__builtin_offsetof(tcb_t, stack) == 8,      "tcb_t.stack must sta
 _Static_assert(__builtin_offsetof(tcb_t, entry) == 0x1010, "tcb_t.entry must be at offset 0x1010");
 _Static_assert(sizeof(tcb_t) == 0x1030,                    "sizeof(tcb_t) changed");
 _Static_assert(__builtin_offsetof(tcb_t, cpu) == 0x1020,        "tcb_t.cpu must be at offset 0x1020");
+_Static_assert(__builtin_offsetof(tcb_t, pinned) == 0x1024,     "tcb_t.pinned must be at offset 0x1024");
 _Static_assert(_Alignof(tcb_t) >= 16,                     "tcb_t must be 16-byte aligned (SP alignment)");
 
 #endif

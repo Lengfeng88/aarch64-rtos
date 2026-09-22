@@ -222,7 +222,7 @@ void sched_load_balance_pass(void) {
     tcb_t *victim = 0;
     for (int i = 0; i < runqueues[busiest].num_tasks; i++) {
         tcb_t *t = runqueues[busiest].tasks[i];
-        if (t->state == 0 && t != current) { victim = t; break; }
+        if (t->state == 0 && t != current && !t->pinned) { victim = t; break; }
     }
     spin_unlock_irqrestore(&runqueues[busiest].lock, f);
 

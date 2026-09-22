@@ -120,10 +120,12 @@ void secondary_main(unsigned long cpu_id) {
     if (cpu_id == 1) {
         pp_tcb[0].name = "ping";
         task_init(&pp_tcb[0], pp_ping_task);
+        pp_tcb[0].pinned = 1; /* M12: never a load-balance migration victim */
         sched_register_on(cpu_id, &pp_tcb[0]);
     } else if (cpu_id == 2) {
         pp_tcb[1].name = "pong";
         task_init(&pp_tcb[1], pp_pong_task);
+        pp_tcb[1].pinned = 1; /* M12: never a load-balance migration victim */
         sched_register_on(cpu_id, &pp_tcb[1]);
     }
 
