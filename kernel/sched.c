@@ -1,4 +1,4 @@
-#define MAX_TASKS 4
+#define MAX_TASKS 8
 
 #include "tcb.h"
 #include "percpu.h"
@@ -157,8 +157,8 @@ void sched_on_tick(void) {
 /* Debug-only accessors (CPU0's run queue; all tasks live there for now). */
 int sched_debug_current_idx(void) { return runqueues[0].current_idx; }
 int sched_debug_num_tasks(void) { return runqueues[0].num_tasks; }
-int sched_debug_task_state(int i) { return runqueues[0].tasks[i]->state; }
-void *sched_debug_task_ptr(int i) { return (void *)runqueues[0].tasks[i]; }
+int sched_debug_task_state(int i) { return (i < 0 || i >= runqueues[0].num_tasks) ? -1 : runqueues[0].tasks[i]->state; }
+void *sched_debug_task_ptr(int i) { return (i < 0 || i >= runqueues[0].num_tasks) ? (void *)0 : (void *)runqueues[0].tasks[i]; }
 unsigned long sched_debug_select_count(int i) { return runqueues[0].select_count[i]; }
 
 /* Wraps switch_to() with a post-switch sanity check. Once control

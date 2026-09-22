@@ -1,7 +1,11 @@
+#include "spinlock.h"
+
 #define UART0_BASE 0x09000000UL
 #define UART_DR    (*(volatile unsigned int *)(UART0_BASE + 0x00))
 #define UART_FR    (*(volatile unsigned int *)(UART0_BASE + 0x18))
 #define UART_FR_TXFF (1 << 5)
+
+static spinlock_t uart_lock;
 
 static inline unsigned long irq_save(void) {
     unsigned long flags;
@@ -20,9 +24,9 @@ void uart_putc(char c) {
 }
 
 void uart_puts(const char *s) {
-    unsigned long flags = irq_save();
+    unsigned long flags = spin_lock_irqsave(&uart_lock);
     while (*s) uart_putc(*s++);
-    irq_restore(flags);
+    spin_unlock_irqrestore(&uart_lock, flags);
 }
 
 static void uart_print_dec(unsigned long v) {
@@ -42,11 +46,11 @@ static void uart_print_dec(unsigned long v) {
  * never be interleaved with another task's/ISR's output — unlike calling
  * uart_puts() three times back to back, which drops the mask between calls. */
 void klog(const char *prefix, long val, int has_val, const char *suffix) {
-    unsigned long flags = irq_save();
+    unsigned long flags = spin_lock_irqsave(&uart_lock);
     const char *s = prefix;
     while (*s) uart_putc(*s++);
     if (has_val) uart_print_dec((unsigned long)val);
     s = suffix;
     while (*s) uart_putc(*s++);
-    irq_restore(flags);
+    spin_unlock_irqrestore(&uart_lock, flags);
 }

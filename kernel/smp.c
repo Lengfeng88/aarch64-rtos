@@ -141,6 +141,9 @@ void secondary_main(unsigned long cpu_id) {
     for (;;) __asm__ volatile("wfi");
 }
 
+/* Number of CPUs that came up (including CPU0); kernel_main uses it for task placement. */
+int smp_online = 1;
+
 /* Runs on CPU0, IRQ still masked, before the first task is started. */
 void smp_boot_secondaries(void) {
     unsigned long mpidr, vbar;
@@ -170,6 +173,7 @@ void smp_boot_secondaries(void) {
         }
     }
     klog("CPUs online: ", (long)online, 1, "\r\n");
+    smp_online = online;
 
 #ifdef SMP_SELFTEST
     st_go = 1;

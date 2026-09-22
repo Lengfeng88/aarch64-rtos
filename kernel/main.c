@@ -19,6 +19,7 @@ extern unsigned long sched_debug_select_count(int i);
 #include "percpu.h"
 
 #include "sync.h"
+#include "spinlock.h"
 
 typedef struct {
     unsigned int bus, dev, func;
@@ -60,6 +61,9 @@ extern void *sched_debug_task_ptr(int i);
 extern int psci_cpu_on(unsigned long target_cpu_mpidr, unsigned long entry_point_pa);
 extern void secondary_start(void);
 extern void smp_boot_secondaries(void);
+extern int smp_online;
+extern void sched_register_on(unsigned long cpu, tcb_t *t);
+extern void klog(const char *prefix, long val, int has_val, const char *suffix);
 extern void smp_report_irq_counts(void);
 
 /* Moved up from further down in the file so sync_exception_handler_full
@@ -274,14 +278,13 @@ static inline void irq_restore(unsigned long flags) {
 
 static unsigned long tick_freq;
 
+static spinlock_t accel_lock;
+
+/* Caller must already hold accel_lock (worker_entry's submit+register
+   critical section, and dispatch_available_completions() below). This
+   function does not lock itself - spin_lock_irqsave isn't recursive,
+   nesting it here would deadlock. */
 static void pending_register(unsigned long cmd_id, sem_t *sem) {
-    /* Same race as accel_submit_copy: without this, two workers could
-       both see the same slot as free (checked-but-not-yet-claimed) if
-       one gets preempted between the check and the write, and the
-       second one's registration would silently clobber the first's -
-       whose completion would then never find a match and it would
-       hang forever waiting on a semaphore nobody posts. */
-    unsigned long flags = irq_disable_save();
     for (int i = 0; i < NUM_WORKERS; i++) {
         if (!pending[i].used) {
             pending[i].cmd_id = cmd_id;
@@ -291,7 +294,6 @@ static void pending_register(unsigned long cmd_id, sem_t *sem) {
             break;
         }
     }
-    irq_restore(flags);
 }
 
 static int worker_loops_seen[NUM_WORKERS];
@@ -310,7 +312,7 @@ static char dst_buf[NUM_WORKERS][TEST_LEN] __attribute__((aligned(64)));
    pending_register(); reading/matching it here from task context with
    IRQ disabled is equally safe). */
 static void dispatch_available_completions(void) {
-    unsigned long flags = irq_disable_save();
+    unsigned long flags = spin_lock_irqsave(&accel_lock);
     dma_accel_completion_t comps[NUM_WORKERS];
     int n = accel_drain_completions_multi(comps, NUM_WORKERS);
     for (int c = 0; c < n; c++) {
@@ -324,7 +326,7 @@ static void dispatch_available_completions(void) {
             }
         }
     }
-    irq_restore(flags);
+    spin_unlock_irqrestore(&accel_lock, flags);
 }
 
 static int worker_id_of(tcb_t *t);
@@ -500,6 +502,10 @@ void worker_entry(void) {
     unsigned long dst_phys = (unsigned long)dst_buf[id];
 
     sem_init(&worker_sem[id], 0);
+    {
+        static const char *const where[4] = { " runs on CPU0\r\n", " runs on CPU1\r\n", " runs on CPU2\r\n", " runs on CPU3\r\n" };
+        klog("D2b: worker ", id, 1, where[this_cpu()->cpu_id & 3]);
+    }
 
     /* The gap between accel_submit_copy() ringing the doorbell and
        pending_register() recording who's waiting is NOT safe to leave
@@ -509,7 +515,7 @@ void worker_entry(void) {
        gets silently dropped, and this worker never wakes up. Wrap
        both calls in one critical section so the doorbell ring and the
        registration are atomic as a pair. */
-    unsigned long flags = irq_disable_save();
+    unsigned long flags = spin_lock_irqsave(&accel_lock);
 #if DISABLE_REAL_DMA
     /* Control experiment: fake an instant completion, no real hardware
        DMA submitted at all, to test whether the device's DMA engine
@@ -527,7 +533,7 @@ void worker_entry(void) {
     unsigned long cmd_id = accel_submit_copy(src_phys, dst_phys, TEST_LEN);
     pending_register(cmd_id, &worker_sem[id]);
 #endif
-    irq_restore(flags);
+    spin_unlock_irqrestore(&accel_lock, flags);
 
     print_decline("P4 M7: worker submitted cmd_id=", cmd_id);
     sem_wait(&worker_sem[id]);
@@ -635,11 +641,6 @@ void kernel_main(unsigned long boot_path) {
     task_init(&busy_task, busy_task_entry); 
 
     current = &taskWorker[0];
-    for (int i = 0; i < NUM_WORKERS; i++) {
-        sched_register(&taskWorker[i]);
-    }
-
-    sched_register(&busy_task); 
 
     gic_init();
     gic_enable_irq(TIMER_IRQ_ID);
@@ -651,6 +652,13 @@ void kernel_main(unsigned long boot_path) {
     print_hexline("CPU0: MPIDR_EL1=", mpidr);
 
     smp_boot_secondaries();
+
+    /* D2b: place each worker on a core that actually came up (worker i -> CPU i % online).
+       With one CPU this reproduces the original registration order exactly. */
+    for (int i = 0; i < NUM_WORKERS; i++) {
+        sched_register_on((unsigned long)i % (unsigned long)smp_online, &taskWorker[i]);
+    }
+    sched_register(&busy_task);
 
     unsigned long dummy_sp;
     switch_to(&dummy_sp, taskWorker[0].sp);
