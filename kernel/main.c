@@ -65,6 +65,7 @@ extern int smp_online;
 extern void sched_register_on(unsigned long cpu, tcb_t *t);
 extern void klog(const char *prefix, long val, int has_val, const char *suffix);
 extern void sched_load_balance_pass(void);
+extern unsigned long sched_debug_select_count_for(unsigned long cpu, tcb_t *t);
 extern void smp_report_irq_counts(void);
 
 /* Moved up from further down in the file so sync_exception_handler_full
@@ -608,10 +609,10 @@ static void busy_task_entry(void) {
         if ((counter & 0xFFFFF) == 0) {
             print_decline("BUSY TASK ewma=", (unsigned long)busy_task.ewma_load);
             smp_report_irq_counts();
-            print_decline("SELECT busy=", sched_debug_select_count(3));   // busy_task是第4个注册的，index=3
-            print_decline("SELECT w0=", sched_debug_select_count(0));
-            print_decline("SELECT w1=", sched_debug_select_count(1));
-            print_decline("SELECT w2=", sched_debug_select_count(2));
+            print_decline("SELECT busy=", sched_debug_select_count_for(busy_task.cpu, &busy_task));
+            print_decline("SELECT w0=", sched_debug_select_count_for(taskWorker[0].cpu, &taskWorker[0]));
+            print_decline("SELECT w1=", sched_debug_select_count_for(taskWorker[1].cpu, &taskWorker[1]));
+            print_decline("SELECT w2=", sched_debug_select_count_for(taskWorker[2].cpu, &taskWorker[2]));
             /* M12: sched_load_balance_pass() used to be called manually
                from here under LOAD_BALANCE_SELFTEST. It's now triggered
                automatically from CPU0's own tick path in irq_handler

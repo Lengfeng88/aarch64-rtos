@@ -260,6 +260,22 @@ int sched_debug_task_state(int i) { return (i < 0 || i >= runqueues[0].num_tasks
 void *sched_debug_task_ptr(int i) { return (i < 0 || i >= runqueues[0].num_tasks) ? (void *)0 : (void *)runqueues[0].tasks[i]; }
 unsigned long sched_debug_select_count(int i) { return runqueues[0].select_count[i]; }
 
+/* Like sched_debug_select_count(), but looks the task up by pointer on
+   its own home rq instead of assuming a fixed index into runqueues[0].
+   Needed since D2b: tasks now live on whichever CPU's rq they were
+   registered to, and their index there depends on registration order
+   (not a constant) - the old sched_debug_select_count(i) callers in
+   busy_task_entry had been silently reading runqueues[0] out of range
+   for worker2/busy_task ever since. Returns 0 if t isn't currently on
+   cpu's rq (e.g. mid-migration). */
+unsigned long sched_debug_select_count_for(unsigned long cpu, tcb_t *t) {
+    runqueue_t *rq = &runqueues[cpu];
+    for (int i = 0; i < rq->num_tasks; i++) {
+        if (rq->tasks[i] == t) return rq->select_count[i];
+    }
+    return 0;
+}
+
 /* Wraps switch_to() with a post-switch sanity check. Once control
    returns here (prev has been switched back in - possibly much later,
    by a completely different call site), prev->sp should hold a value
