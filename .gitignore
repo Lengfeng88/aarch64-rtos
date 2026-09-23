@@ -3,3 +3,4 @@ build/
 stress_logs*/
 disasm.txt
 __pycache__/
+*.d

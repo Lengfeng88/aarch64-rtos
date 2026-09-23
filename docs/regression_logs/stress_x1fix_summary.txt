@@ -1,0 +1,66 @@
+=== Run 1/30 ===
+  -> UNCLEAR (check log manually: stress_logs_after_x1fix/run_1.log)
+=== Run 2/30 ===
+  -> clean (3/3 workers OK)
+=== Run 3/30 ===
+  -> clean (3/3 workers OK)
+=== Run 4/30 ===
+  -> clean (3/3 workers OK)
+=== Run 5/30 ===
+  -> clean (3/3 workers OK)
+=== Run 6/30 ===
+  -> UNCLEAR (check log manually: stress_logs_after_x1fix/run_6.log)
+=== Run 7/30 ===
+  -> clean (3/3 workers OK)
+=== Run 8/30 ===
+  -> clean (3/3 workers OK)
+=== Run 9/30 ===
+  -> UNCLEAR (check log manually: stress_logs_after_x1fix/run_9.log)
+=== Run 10/30 ===
+  -> clean (3/3 workers OK)
+=== Run 11/30 ===
+  -> clean (3/3 workers OK)
+=== Run 12/30 ===
+  -> UNCLEAR (check log manually: stress_logs_after_x1fix/run_12.log)
+=== Run 13/30 ===
+  -> clean (3/3 workers OK)
+=== Run 14/30 ===
+  -> UNCLEAR (check log manually: stress_logs_after_x1fix/run_14.log)
+=== Run 15/30 ===
+  -> clean (3/3 workers OK)
+=== Run 16/30 ===
+  -> clean (3/3 workers OK)
+=== Run 17/30 ===
+  -> UNCLEAR (check log manually: stress_logs_after_x1fix/run_17.log)
+=== Run 18/30 ===
+  -> UNCLEAR (check log manually: stress_logs_after_x1fix/run_18.log)
+=== Run 19/30 ===
+  -> clean (3/3 workers OK)
+=== Run 20/30 ===
+  -> clean (3/3 workers OK)
+=== Run 21/30 ===
+  -> clean (3/3 workers OK)
+=== Run 22/30 ===
+  -> clean (3/3 workers OK)
+=== Run 23/30 ===
+  -> clean (3/3 workers OK)
+=== Run 24/30 ===
+  -> clean (3/3 workers OK)
+=== Run 25/30 ===
+  -> UNCLEAR (check log manually: stress_logs_after_x1fix/run_25.log)
+=== Run 26/30 ===
+  -> UNCLEAR (check log manually: stress_logs_after_x1fix/run_26.log)
+=== Run 27/30 ===
+  -> clean (3/3 workers OK)
+=== Run 28/30 ===
+  -> clean (3/3 workers OK)
+=== Run 29/30 ===
+  -> clean (3/3 workers OK)
+=== Run 30/30 ===
+  -> clean (3/3 workers OK)
+
+=== Summary ===
+Total runs:  30
+Crashed:     0
+Clean (3/3): 21
+Unclear:     9

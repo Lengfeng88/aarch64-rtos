@@ -1,0 +1,607 @@
+nohup: ignoring input
+=== Run 1/300 ===
+  -> clean (3/3 workers OK)
+=== Run 2/300 ===
+  -> clean (3/3 workers OK)
+=== Run 3/300 ===
+  -> clean (3/3 workers OK)
+=== Run 4/300 ===
+  -> clean (3/3 workers OK)
+=== Run 5/300 ===
+  -> clean (3/3 workers OK)
+=== Run 6/300 ===
+  -> clean (3/3 workers OK)
+=== Run 7/300 ===
+  -> clean (3/3 workers OK)
+=== Run 8/300 ===
+  -> clean (3/3 workers OK)
+=== Run 9/300 ===
+  -> clean (3/3 workers OK)
+=== Run 10/300 ===
+  -> clean (3/3 workers OK)
+=== Run 11/300 ===
+  -> clean (3/3 workers OK)
+=== Run 12/300 ===
+  -> clean (3/3 workers OK)
+=== Run 13/300 ===
+  -> clean (3/3 workers OK)
+=== Run 14/300 ===
+  -> clean (3/3 workers OK)
+=== Run 15/300 ===
+  -> clean (3/3 workers OK)
+=== Run 16/300 ===
+  -> clean (3/3 workers OK)
+=== Run 17/300 ===
+  -> clean (3/3 workers OK)
+=== Run 18/300 ===
+  -> clean (3/3 workers OK)
+=== Run 19/300 ===
+  -> clean (3/3 workers OK)
+=== Run 20/300 ===
+  -> clean (3/3 workers OK)
+=== Run 21/300 ===
+  -> clean (3/3 workers OK)
+=== Run 22/300 ===
+  -> clean (3/3 workers OK)
+=== Run 23/300 ===
+  -> clean (3/3 workers OK)
+=== Run 24/300 ===
+  -> clean (3/3 workers OK)
+=== Run 25/300 ===
+  -> clean (3/3 workers OK)
+=== Run 26/300 ===
+  -> clean (3/3 workers OK)
+=== Run 27/300 ===
+  -> clean (3/3 workers OK)
+=== Run 28/300 ===
+  -> clean (3/3 workers OK)
+=== Run 29/300 ===
+  -> clean (3/3 workers OK)
+=== Run 30/300 ===
+  -> clean (3/3 workers OK)
+=== Run 31/300 ===
+  -> clean (3/3 workers OK)
+=== Run 32/300 ===
+  -> clean (3/3 workers OK)
+=== Run 33/300 ===
+  -> clean (3/3 workers OK)
+=== Run 34/300 ===
+  -> clean (3/3 workers OK)
+=== Run 35/300 ===
+  -> clean (3/3 workers OK)
+=== Run 36/300 ===
+  -> clean (3/3 workers OK)
+=== Run 37/300 ===
+  -> clean (3/3 workers OK)
+=== Run 38/300 ===
+  -> clean (3/3 workers OK)
+=== Run 39/300 ===
+  -> clean (3/3 workers OK)
+=== Run 40/300 ===
+  -> clean (3/3 workers OK)
+=== Run 41/300 ===
+  -> clean (3/3 workers OK)
+=== Run 42/300 ===
+  -> clean (3/3 workers OK)
+=== Run 43/300 ===
+  -> clean (3/3 workers OK)
+=== Run 44/300 ===
+  -> clean (3/3 workers OK)
+=== Run 45/300 ===
+  -> clean (3/3 workers OK)
+=== Run 46/300 ===
+  -> clean (3/3 workers OK)
+=== Run 47/300 ===
+  -> clean (3/3 workers OK)
+=== Run 48/300 ===
+  -> clean (3/3 workers OK)
+=== Run 49/300 ===
+  -> clean (3/3 workers OK)
+=== Run 50/300 ===
+  -> clean (3/3 workers OK)
+=== Run 51/300 ===
+  -> clean (3/3 workers OK)
+=== Run 52/300 ===
+  -> clean (3/3 workers OK)
+=== Run 53/300 ===
+  -> clean (3/3 workers OK)
+=== Run 54/300 ===
+  -> clean (3/3 workers OK)
+=== Run 55/300 ===
+  -> clean (3/3 workers OK)
+=== Run 56/300 ===
+  -> clean (3/3 workers OK)
+=== Run 57/300 ===
+  -> clean (3/3 workers OK)
+=== Run 58/300 ===
+  -> clean (3/3 workers OK)
+=== Run 59/300 ===
+  -> clean (3/3 workers OK)
+=== Run 60/300 ===
+  -> clean (3/3 workers OK)
+=== Run 61/300 ===
+  -> clean (3/3 workers OK)
+=== Run 62/300 ===
+  -> clean (3/3 workers OK)
+=== Run 63/300 ===
+  -> clean (3/3 workers OK)
+=== Run 64/300 ===
+  -> clean (3/3 workers OK)
+=== Run 65/300 ===
+  -> clean (3/3 workers OK)
+=== Run 66/300 ===
+  -> clean (3/3 workers OK)
+=== Run 67/300 ===
+  -> clean (3/3 workers OK)
+=== Run 68/300 ===
+  -> clean (3/3 workers OK)
+=== Run 69/300 ===
+  -> clean (3/3 workers OK)
+=== Run 70/300 ===
+  -> clean (3/3 workers OK)
+=== Run 71/300 ===
+  -> clean (3/3 workers OK)
+=== Run 72/300 ===
+  -> clean (3/3 workers OK)
+=== Run 73/300 ===
+  -> clean (3/3 workers OK)
+=== Run 74/300 ===
+  -> clean (3/3 workers OK)
+=== Run 75/300 ===
+  -> clean (3/3 workers OK)
+=== Run 76/300 ===
+  -> clean (3/3 workers OK)
+=== Run 77/300 ===
+  -> clean (3/3 workers OK)
+=== Run 78/300 ===
+  -> clean (3/3 workers OK)
+=== Run 79/300 ===
+  -> clean (3/3 workers OK)
+=== Run 80/300 ===
+  -> clean (3/3 workers OK)
+=== Run 81/300 ===
+  -> clean (3/3 workers OK)
+=== Run 82/300 ===
+  -> clean (3/3 workers OK)
+=== Run 83/300 ===
+  -> clean (3/3 workers OK)
+=== Run 84/300 ===
+  -> clean (3/3 workers OK)
+=== Run 85/300 ===
+  -> clean (3/3 workers OK)
+=== Run 86/300 ===
+  -> clean (3/3 workers OK)
+=== Run 87/300 ===
+  -> clean (3/3 workers OK)
+=== Run 88/300 ===
+  -> clean (3/3 workers OK)
+=== Run 89/300 ===
+  -> clean (3/3 workers OK)
+=== Run 90/300 ===
+  -> clean (3/3 workers OK)
+=== Run 91/300 ===
+  -> clean (3/3 workers OK)
+=== Run 92/300 ===
+  -> clean (3/3 workers OK)
+=== Run 93/300 ===
+  -> clean (3/3 workers OK)
+=== Run 94/300 ===
+  -> clean (3/3 workers OK)
+=== Run 95/300 ===
+  -> clean (3/3 workers OK)
+=== Run 96/300 ===
+  -> clean (3/3 workers OK)
+=== Run 97/300 ===
+  -> clean (3/3 workers OK)
+=== Run 98/300 ===
+  -> clean (3/3 workers OK)
+=== Run 99/300 ===
+  -> clean (3/3 workers OK)
+=== Run 100/300 ===
+  -> clean (3/3 workers OK)
+=== Run 101/300 ===
+  -> clean (3/3 workers OK)
+=== Run 102/300 ===
+  -> clean (3/3 workers OK)
+=== Run 103/300 ===
+  -> clean (3/3 workers OK)
+=== Run 104/300 ===
+  -> clean (3/3 workers OK)
+=== Run 105/300 ===
+  -> clean (3/3 workers OK)
+=== Run 106/300 ===
+  -> clean (3/3 workers OK)
+=== Run 107/300 ===
+  -> clean (3/3 workers OK)
+=== Run 108/300 ===
+  -> clean (3/3 workers OK)
+=== Run 109/300 ===
+  -> clean (3/3 workers OK)
+=== Run 110/300 ===
+  -> clean (3/3 workers OK)
+=== Run 111/300 ===
+  -> clean (3/3 workers OK)
+=== Run 112/300 ===
+  -> clean (3/3 workers OK)
+=== Run 113/300 ===
+  -> clean (3/3 workers OK)
+=== Run 114/300 ===
+  -> clean (3/3 workers OK)
+=== Run 115/300 ===
+  -> clean (3/3 workers OK)
+=== Run 116/300 ===
+  -> clean (3/3 workers OK)
+=== Run 117/300 ===
+  -> clean (3/3 workers OK)
+=== Run 118/300 ===
+  -> clean (3/3 workers OK)
+=== Run 119/300 ===
+  -> clean (3/3 workers OK)
+=== Run 120/300 ===
+  -> clean (3/3 workers OK)
+=== Run 121/300 ===
+  -> clean (3/3 workers OK)
+=== Run 122/300 ===
+  -> clean (3/3 workers OK)
+=== Run 123/300 ===
+  -> clean (3/3 workers OK)
+=== Run 124/300 ===
+  -> clean (3/3 workers OK)
+=== Run 125/300 ===
+  -> clean (3/3 workers OK)
+=== Run 126/300 ===
+  -> clean (3/3 workers OK)
+=== Run 127/300 ===
+  -> clean (3/3 workers OK)
+=== Run 128/300 ===
+  -> clean (3/3 workers OK)
+=== Run 129/300 ===
+  -> clean (3/3 workers OK)
+=== Run 130/300 ===
+  -> clean (3/3 workers OK)
+=== Run 131/300 ===
+  -> clean (3/3 workers OK)
+=== Run 132/300 ===
+  -> clean (3/3 workers OK)
+=== Run 133/300 ===
+  -> clean (3/3 workers OK)
+=== Run 134/300 ===
+  -> clean (3/3 workers OK)
+=== Run 135/300 ===
+  -> clean (3/3 workers OK)
+=== Run 136/300 ===
+  -> clean (3/3 workers OK)
+=== Run 137/300 ===
+  -> clean (3/3 workers OK)
+=== Run 138/300 ===
+  -> clean (3/3 workers OK)
+=== Run 139/300 ===
+  -> clean (3/3 workers OK)
+=== Run 140/300 ===
+  -> clean (3/3 workers OK)
+=== Run 141/300 ===
+  -> clean (3/3 workers OK)
+=== Run 142/300 ===
+  -> clean (3/3 workers OK)
+=== Run 143/300 ===
+  -> clean (3/3 workers OK)
+=== Run 144/300 ===
+  -> clean (3/3 workers OK)
+=== Run 145/300 ===
+  -> clean (3/3 workers OK)
+=== Run 146/300 ===
+  -> clean (3/3 workers OK)
+=== Run 147/300 ===
+  -> clean (3/3 workers OK)
+=== Run 148/300 ===
+  -> clean (3/3 workers OK)
+=== Run 149/300 ===
+  -> clean (3/3 workers OK)
+=== Run 150/300 ===
+  -> clean (3/3 workers OK)
+=== Run 151/300 ===
+  -> clean (3/3 workers OK)
+=== Run 152/300 ===
+  -> clean (3/3 workers OK)
+=== Run 153/300 ===
+  -> clean (3/3 workers OK)
+=== Run 154/300 ===
+  -> clean (3/3 workers OK)
+=== Run 155/300 ===
+  -> clean (3/3 workers OK)
+=== Run 156/300 ===
+  -> clean (3/3 workers OK)
+=== Run 157/300 ===
+  -> clean (3/3 workers OK)
+=== Run 158/300 ===
+  -> clean (3/3 workers OK)
+=== Run 159/300 ===
+  -> clean (3/3 workers OK)
+=== Run 160/300 ===
+  -> clean (3/3 workers OK)
+=== Run 161/300 ===
+  -> clean (3/3 workers OK)
+=== Run 162/300 ===
+  -> clean (3/3 workers OK)
+=== Run 163/300 ===
+  -> clean (3/3 workers OK)
+=== Run 164/300 ===
+  -> clean (3/3 workers OK)
+=== Run 165/300 ===
+  -> clean (3/3 workers OK)
+=== Run 166/300 ===
+  -> clean (3/3 workers OK)
+=== Run 167/300 ===
+  -> clean (3/3 workers OK)
+=== Run 168/300 ===
+  -> clean (3/3 workers OK)
+=== Run 169/300 ===
+  -> clean (3/3 workers OK)
+=== Run 170/300 ===
+  -> clean (3/3 workers OK)
+=== Run 171/300 ===
+  -> clean (3/3 workers OK)
+=== Run 172/300 ===
+  -> clean (3/3 workers OK)
+=== Run 173/300 ===
+  -> clean (3/3 workers OK)
+=== Run 174/300 ===
+  -> clean (3/3 workers OK)
+=== Run 175/300 ===
+  -> clean (3/3 workers OK)
+=== Run 176/300 ===
+  -> clean (3/3 workers OK)
+=== Run 177/300 ===
+  -> clean (3/3 workers OK)
+=== Run 178/300 ===
+  -> clean (3/3 workers OK)
+=== Run 179/300 ===
+  -> clean (3/3 workers OK)
+=== Run 180/300 ===
+  -> clean (3/3 workers OK)
+=== Run 181/300 ===
+  -> clean (3/3 workers OK)
+=== Run 182/300 ===
+  -> clean (3/3 workers OK)
+=== Run 183/300 ===
+  -> clean (3/3 workers OK)
+=== Run 184/300 ===
+  -> clean (3/3 workers OK)
+=== Run 185/300 ===
+  -> clean (3/3 workers OK)
+=== Run 186/300 ===
+  -> clean (3/3 workers OK)
+=== Run 187/300 ===
+  -> clean (3/3 workers OK)
+=== Run 188/300 ===
+  -> clean (3/3 workers OK)
+=== Run 189/300 ===
+  -> clean (3/3 workers OK)
+=== Run 190/300 ===
+  -> clean (3/3 workers OK)
+=== Run 191/300 ===
+  -> clean (3/3 workers OK)
+=== Run 192/300 ===
+  -> clean (3/3 workers OK)
+=== Run 193/300 ===
+  -> clean (3/3 workers OK)
+=== Run 194/300 ===
+  -> clean (3/3 workers OK)
+=== Run 195/300 ===
+  -> clean (3/3 workers OK)
+=== Run 196/300 ===
+  -> clean (3/3 workers OK)
+=== Run 197/300 ===
+  -> clean (3/3 workers OK)
+=== Run 198/300 ===
+  -> clean (3/3 workers OK)
+=== Run 199/300 ===
+  -> clean (3/3 workers OK)
+=== Run 200/300 ===
+  -> clean (3/3 workers OK)
+=== Run 201/300 ===
+  -> clean (3/3 workers OK)
+=== Run 202/300 ===
+  -> clean (3/3 workers OK)
+=== Run 203/300 ===
+  -> clean (3/3 workers OK)
+=== Run 204/300 ===
+  -> clean (3/3 workers OK)
+=== Run 205/300 ===
+  -> clean (3/3 workers OK)
+=== Run 206/300 ===
+  -> clean (3/3 workers OK)
+=== Run 207/300 ===
+  -> clean (3/3 workers OK)
+=== Run 208/300 ===
+  -> clean (3/3 workers OK)
+=== Run 209/300 ===
+  -> clean (3/3 workers OK)
+=== Run 210/300 ===
+  -> clean (3/3 workers OK)
+=== Run 211/300 ===
+  -> clean (3/3 workers OK)
+=== Run 212/300 ===
+  -> clean (3/3 workers OK)
+=== Run 213/300 ===
+  -> clean (3/3 workers OK)
+=== Run 214/300 ===
+  -> clean (3/3 workers OK)
+=== Run 215/300 ===
+  -> clean (3/3 workers OK)
+=== Run 216/300 ===
+  -> clean (3/3 workers OK)
+=== Run 217/300 ===
+  -> clean (3/3 workers OK)
+=== Run 218/300 ===
+  -> clean (3/3 workers OK)
+=== Run 219/300 ===
+  -> clean (3/3 workers OK)
+=== Run 220/300 ===
+  -> clean (3/3 workers OK)
+=== Run 221/300 ===
+  -> clean (3/3 workers OK)
+=== Run 222/300 ===
+  -> clean (3/3 workers OK)
+=== Run 223/300 ===
+  -> clean (3/3 workers OK)
+=== Run 224/300 ===
+  -> clean (3/3 workers OK)
+=== Run 225/300 ===
+  -> clean (3/3 workers OK)
+=== Run 226/300 ===
+  -> clean (3/3 workers OK)
+=== Run 227/300 ===
+  -> clean (3/3 workers OK)
+=== Run 228/300 ===
+  -> clean (3/3 workers OK)
+=== Run 229/300 ===
+  -> clean (3/3 workers OK)
+=== Run 230/300 ===
+  -> clean (3/3 workers OK)
+=== Run 231/300 ===
+  -> clean (3/3 workers OK)
+=== Run 232/300 ===
+  -> clean (3/3 workers OK)
+=== Run 233/300 ===
+  -> clean (3/3 workers OK)
+=== Run 234/300 ===
+  -> clean (3/3 workers OK)
+=== Run 235/300 ===
+  -> clean (3/3 workers OK)
+=== Run 236/300 ===
+  -> clean (3/3 workers OK)
+=== Run 237/300 ===
+  -> clean (3/3 workers OK)
+=== Run 238/300 ===
+  -> clean (3/3 workers OK)
+=== Run 239/300 ===
+  -> clean (3/3 workers OK)
+=== Run 240/300 ===
+  -> clean (3/3 workers OK)
+=== Run 241/300 ===
+  -> clean (3/3 workers OK)
+=== Run 242/300 ===
+  -> clean (3/3 workers OK)
+=== Run 243/300 ===
+  -> clean (3/3 workers OK)
+=== Run 244/300 ===
+  -> clean (3/3 workers OK)
+=== Run 245/300 ===
+  -> clean (3/3 workers OK)
+=== Run 246/300 ===
+  -> clean (3/3 workers OK)
+=== Run 247/300 ===
+  -> clean (3/3 workers OK)
+=== Run 248/300 ===
+  -> clean (3/3 workers OK)
+=== Run 249/300 ===
+  -> clean (3/3 workers OK)
+=== Run 250/300 ===
+  -> clean (3/3 workers OK)
+=== Run 251/300 ===
+  -> clean (3/3 workers OK)
+=== Run 252/300 ===
+  -> clean (3/3 workers OK)
+=== Run 253/300 ===
+  -> clean (3/3 workers OK)
+=== Run 254/300 ===
+  -> clean (3/3 workers OK)
+=== Run 255/300 ===
+  -> clean (3/3 workers OK)
+=== Run 256/300 ===
+  -> clean (3/3 workers OK)
+=== Run 257/300 ===
+  -> clean (3/3 workers OK)
+=== Run 258/300 ===
+  -> clean (3/3 workers OK)
+=== Run 259/300 ===
+  -> clean (3/3 workers OK)
+=== Run 260/300 ===
+  -> clean (3/3 workers OK)
+=== Run 261/300 ===
+  -> clean (3/3 workers OK)
+=== Run 262/300 ===
+  -> clean (3/3 workers OK)
+=== Run 263/300 ===
+  -> clean (3/3 workers OK)
+=== Run 264/300 ===
+  -> clean (3/3 workers OK)
+=== Run 265/300 ===
+  -> clean (3/3 workers OK)
+=== Run 266/300 ===
+  -> clean (3/3 workers OK)
+=== Run 267/300 ===
+  -> clean (3/3 workers OK)
+=== Run 268/300 ===
+  -> clean (3/3 workers OK)
+=== Run 269/300 ===
+  -> clean (3/3 workers OK)
+=== Run 270/300 ===
+  -> clean (3/3 workers OK)
+=== Run 271/300 ===
+  -> clean (3/3 workers OK)
+=== Run 272/300 ===
+  -> clean (3/3 workers OK)
+=== Run 273/300 ===
+  -> clean (3/3 workers OK)
+=== Run 274/300 ===
+  -> clean (3/3 workers OK)
+=== Run 275/300 ===
+  -> clean (3/3 workers OK)
+=== Run 276/300 ===
+  -> clean (3/3 workers OK)
+=== Run 277/300 ===
+  -> clean (3/3 workers OK)
+=== Run 278/300 ===
+  -> clean (3/3 workers OK)
+=== Run 279/300 ===
+  -> clean (3/3 workers OK)
+=== Run 280/300 ===
+  -> clean (3/3 workers OK)
+=== Run 281/300 ===
+  -> clean (3/3 workers OK)
+=== Run 282/300 ===
+  -> clean (3/3 workers OK)
+=== Run 283/300 ===
+  -> clean (3/3 workers OK)
+=== Run 284/300 ===
+  -> clean (3/3 workers OK)
+=== Run 285/300 ===
+  -> clean (3/3 workers OK)
+=== Run 286/300 ===
+  -> clean (3/3 workers OK)
+=== Run 287/300 ===
+  -> clean (3/3 workers OK)
+=== Run 288/300 ===
+  -> clean (3/3 workers OK)
+=== Run 289/300 ===
+  -> clean (3/3 workers OK)
+=== Run 290/300 ===
+  -> clean (3/3 workers OK)
+=== Run 291/300 ===
+  -> clean (3/3 workers OK)
+=== Run 292/300 ===
+  -> clean (3/3 workers OK)
+=== Run 293/300 ===
+  -> clean (3/3 workers OK)
+=== Run 294/300 ===
+  -> clean (3/3 workers OK)
+=== Run 295/300 ===
+  -> clean (3/3 workers OK)
+=== Run 296/300 ===
+  -> clean (3/3 workers OK)
+=== Run 297/300 ===
+  -> clean (3/3 workers OK)
+=== Run 298/300 ===
+  -> clean (3/3 workers OK)
+=== Run 299/300 ===
+  -> clean (3/3 workers OK)
+=== Run 300/300 ===
+  -> clean (3/3 workers OK)
+
+=== Summary ===
+Total runs:  300
+Crashed:     0
+Clean (3/3): 300
+Unclear:     0
