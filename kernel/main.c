@@ -402,6 +402,20 @@ void irq_handler(void) {
         sched_on_tick(); 
         tcb_t *next = pick_next_ready();
         gic_eoi(id);
+#ifdef LOAD_BALANCE_SELFTEST
+        /* M12: throttled automatic trigger, CPU0's own tick path only.
+           Runs after EOI so this doesn't delay acking the timer.
+           Only touches runqueues[1..MAX_CPUS-1] - no lock-order
+           conflict with the runqueues[0] lock pick_next_ready() just
+           took and released above. 200 ticks ~= 100ms at the current
+           tick_freq/2000 period; not measured/tuned, a conservative
+           starting point - revisit if profiling shows it matters. */
+        static unsigned int lb_tick_count = 0;
+        if (++lb_tick_count >= 200) {
+            lb_tick_count = 0;
+            sched_load_balance_pass();
+        }
+#endif
         if (next != current) {
             tcb_t *prev = current;
             current = next;
@@ -598,10 +612,13 @@ static void busy_task_entry(void) {
             print_decline("SELECT w0=", sched_debug_select_count(0));
             print_decline("SELECT w1=", sched_debug_select_count(1));
             print_decline("SELECT w2=", sched_debug_select_count(2));
-#ifdef LOAD_BALANCE_SELFTEST
-            uart_puts("LB: running load_balance_pass\r\n");
-            sched_load_balance_pass();
-#endif
+            /* M12: sched_load_balance_pass() used to be called manually
+               from here under LOAD_BALANCE_SELFTEST. It's now triggered
+               automatically from CPU0's own tick path in irq_handler
+               (throttled to every 200 ticks) - see that call site
+               instead. Removed here to avoid two independent trigger
+               sources running at once and muddying what's actually
+               driving any given migration. */
 }
         /* 故意不yield() —— 只靠timer抢占它 */
     }
