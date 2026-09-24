@@ -44,7 +44,7 @@ The IRQ-affinity work was checked with five 30-run batches (`stress_irq.sh`), ev
 
 **Tags.** Build from `p4-irq-affinity`, which includes M12 step 3 and the debug-print fix in `7cfdb97`. `p4-m12-step1` and `p4-m12-step2` are kept as historical records of what was verified at the time; they predate the fix in `cd4fbd1` (`p4-m12-step2-fixed1`) and can crash under `-smp 4` (the migration guard compared against the calling CPU's `current` instead of the source CPU's). Do not build from them. Other tags: `p4-m12-step3`, `p4-single-core-baseline`, `p4-single-core-maskfix-300`, `p4-m8`, `p4-align`, `p4-m9a`, `p4-m10a`, `p4-m11b`, `p4-d2a`.
 
-Full write-up of what each M1–M7 milestone does, the bugs found along the way, and how they were diagnosed: see [`docs/M1-M7-writeup.md`](docs/M1-M7-writeup.md) (including the resolved `EC=0x0E` investigation) and [`EC-0x00-investigation.md`](EC-0x00-investigation.md) (the `EC=0x00` / `ELR=0` investigation, now believed fixed).
+For a walkthrough of each milestone's purpose and method (M1–M8 single-core, M8–M12 SMP, IRQ affinity), see [`docs/P4-design-walkthrough.md`](docs/P4-design-walkthrough.md). Full write-up of what each M1–M7 milestone does, the bugs found along the way, and how they were diagnosed: see [`docs/M1-M7-writeup.md`](docs/M1-M7-writeup.md) (including the resolved `EC=0x0E` investigation) and [`EC-0x00-investigation.md`](EC-0x00-investigation.md) (the `EC=0x00` / `ELR=0` investigation, now believed fixed).
 
 ## Building and running
 
