@@ -1,0 +1,606 @@
+nohup: ignoring input
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+irq1_smp4: clean=30/30  no-irq-on-expected-cpu=0  irq-leaked-to-other-cpu=0
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+irq1_smp1: clean=30/30  no-irq-on-expected-cpu=0  irq-leaked-to-other-cpu=0
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: qemu-system-aarch64: terminating on signal 15 from pid 225984 (timeout): integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+irq2_smp4: clean=30/30  no-irq-on-expected-cpu=0  irq-leaked-to-other-cpu=0
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3qemu-system-aarch64: terminating on signal 15 from pid 237329 (timeout): integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+irq0_smp4: clean=30/30  no-irq-on-expected-cpu=0  irq-leaked-to-other-cpu=0
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 1: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 3: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 15: [: 2: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+./stress_irq.sh: line 17: [: 0: integer expression expected
+default_smp4: clean=30/30  no-irq-on-expected-cpu=0  irq-leaked-to-other-cpu=0

@@ -2,6 +2,8 @@ extern void uart_puts(const char *s);
 extern void vectors(void);
 extern void gic_init(void);
 extern void gic_enable_irq(unsigned int id);
+extern void gic_enable_irq_target(unsigned int id, unsigned char target_mask);
+extern unsigned int gic_probe_target(unsigned int id, unsigned char mask);
 extern unsigned int gic_ack(void);
 extern void gic_eoi(unsigned int id);
 extern unsigned int sched_debug_task_ewma(int i);
@@ -333,6 +335,15 @@ static void dispatch_available_completions(void) {
 
 static int worker_id_of(tcb_t *t);
 
+/* DMA completion IRQs seen per core (each core writes only its own slot). */
+static volatile unsigned long dma_irq_count[4];
+static void dma_irq_report(void) {
+    print_decline("DMA IRQ c0=", dma_irq_count[0]);
+    print_decline("DMA IRQ c1=", dma_irq_count[1]);
+    print_decline("DMA IRQ c2=", dma_irq_count[2]);
+    print_decline("DMA IRQ c3=", dma_irq_count[3]);
+}
+
 /* Secondary cores: count the tick, re-arm this core's timer, EOI. No scheduler
    state (all_tasks/current_idx/...) may be touched from here yet. */
 static void secondary_irq(unsigned int id) {
@@ -351,6 +362,16 @@ static void secondary_irq(unsigned int id) {
             this_cpu()->context_switches++;
             switch_to(&prev->sp, n->sp);
         }
+        return;
+    }
+    if (id == DMA_ACCEL_IRQ_ID) {
+        dma_irq_count[this_cpu()->cpu_id]++;
+        unsigned int status = accel_irq_status();
+        if (status & IRQ_DMA_DONE) {
+            accel_irq_ack(IRQ_DMA_DONE);
+            dispatch_available_completions();
+        }
+        gic_eoi(id);
         return;
     }
     gic_eoi(id);
@@ -481,6 +502,7 @@ void irq_handler(void) {
     }
 
     if (id == DMA_ACCEL_IRQ_ID) {
+        dma_irq_count[0]++;
         unsigned int status = accel_irq_status();
         if (status & IRQ_DMA_DONE) {
             accel_irq_ack(IRQ_DMA_DONE);
@@ -609,6 +631,7 @@ static void busy_task_entry(void) {
         if ((counter & 0xFFFFF) == 0) {
             print_decline("BUSY TASK ewma=", (unsigned long)busy_task.ewma_load);
             smp_report_irq_counts();
+        dma_irq_report();
             print_decline("SELECT busy=", sched_debug_select_count_for(busy_task.cpu, &busy_task));
             print_decline("SELECT w0=", sched_debug_select_count_for(taskWorker[0].cpu, &taskWorker[0]));
             print_decline("SELECT w1=", sched_debug_select_count_for(taskWorker[1].cpu, &taskWorker[1]));
@@ -667,14 +690,34 @@ void kernel_main(unsigned long boot_path) {
 
     gic_init();
     gic_enable_irq(TIMER_IRQ_ID);
+#ifndef DMA_IRQ_CPU
     gic_enable_irq(DMA_ACCEL_IRQ_ID);
+#endif
     timer_rearm(tick_freq / 2000);
 
     unsigned long mpidr;
     __asm__ volatile("mrs %0, MPIDR_EL1" : "=r"(mpidr));
     print_hexline("CPU0: MPIDR_EL1=", mpidr);
+#ifdef GIC_PROBE
+    {   /* ITARGETSR readback on an unused SPI; does not enable it */
+        static const unsigned char probe_masks[] = {0x01, 0x02, 0x04, 0x08, 0x03, 0x0F};
+        for (unsigned pi = 0; pi < sizeof probe_masks; pi++) {
+            print_hexline("PROBE mask=", probe_masks[pi]);
+            print_hexline("PROBE readback=", gic_probe_target(200, probe_masks[pi]));
+        }
+    }
+#endif
 
     smp_boot_secondaries();
+#ifdef DMA_IRQ_CPU
+    /* QEMU does not clear ITARGETSR bits of absent CPUs (probed at -smp 2),
+       so clamp here: fall back to CPU0 if the chosen core is not online. */
+    {
+        unsigned int dma_tgt = (smp_online > DMA_IRQ_CPU) ? (unsigned int)DMA_IRQ_CPU : 0u;
+        gic_enable_irq_target(DMA_ACCEL_IRQ_ID, (unsigned char)(1u << dma_tgt));
+        print_decline("DMA IRQ target cpu=", dma_tgt);
+    }
+#endif
 
     /* D2b: place each worker on a core that actually came up (worker i -> CPU i % online).
        With one CPU this reproduces the original registration order exactly. */
