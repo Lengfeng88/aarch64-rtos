@@ -1,6 +1,6 @@
-# EC=0x00 / ELR=0 Wild-Jump Investigation — Extensive, Inconclusive
+# EC=0x00 / ELR=0 Wild-Jump Investigation — Extensive, Inconclusive (Closed)
 
-**Status: known issue, unresolved. Not a regression of the fixed EC=0x0E bug — confirmed independent.**
+**Status: closed 2026-09-25, on absence of recurrence — not a confirmed root cause. Not a regression of the fixed EC=0x0E bug — confirmed independent. See "Closure" at the end of this document for the evidence; the investigation session below never reached a confirmed causal mechanism and is kept as historical record.**
 
 ---
 
@@ -149,7 +149,7 @@ Two separate defects found and fixed:
    switch_to() masked it. A timer IRQ in that window made irq_handler
    treat `current` as the preempted task and store the running task's SP
    into the wrong tcb->sp. Fixed with block_current_and_switch() and a
-   masked yield(): pick-next, `current = next` and switch_to() all run
+   masked yield(): pick-next, `current = next` and swit**Status: known issue, unresolved. Not a regression of the fixed EC=0x0E bug — confirmed independent.**ch_to() all run
    with IRQ masked; next==prev handled.
 
 Measured (same harness, 40s/run): 8/30 CORRUPT before the second fix;
@@ -166,3 +166,17 @@ to build/kernel_maskfix.elf); default `make` has no hooks. Hook-free
 build/kernel_nohooks.elf: 100/100 clean, 0 crashed, 0 unclear
 (stress_logs_nohooks100/). Combined with 300/300 on the instrumented build.
 Scope: single CPU, 3 workers + busy task, 40 s per run.
+
+  Scope: single CPU, 3 workers + busy task, 40 s per run.
++
++ ## Closure (2026-09-25)
++
++ No `EC=0x00`/`ELR=0` occurrence in any regression batch since the
++ 2026-09-19/20 mask-fix (`block_current_and_switch()` + masked `yield()`):
++ hook-free 100/100, instrumented 300/300, and every subsequent 30-run
++ `-smp 1`/`-smp 4` batch through M8–M12, the D1/D2 locking work, and the
++ DMA-IRQ-affinity change — well over 1000 individual runs total. The
++ mechanism was never proven (see "Not proven" above); this closes on
++ sustained absence-of-recurrence across a large, varied run count, not on
++ a confirmed cause. Reopen if `EC=0x00`/`ELR=0`, or any unexplained
++ `ELR` near `0x0`, resurfaces in a future batch.
