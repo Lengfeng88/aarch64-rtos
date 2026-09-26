@@ -36,8 +36,10 @@ routed_ok=0
 
 for i in $(seq 1 "$RUNS"); do
   log="$LOGDIR/run_${i}.log"
-  timeout "${TIMEOUT_S}s" "$QEMU" -M virt -cpu cortex-a53 -nographic \
-    -device dma-accel -kernel "$ELF" -smp "$SMP" > "$log" 2>&1
+  # Run under `script` (pty) so QEMU's stdout isn't fully block-buffered;
+  # a plain redirect loses everything if `timeout` SIGTERMs before a flush
+  # (this is why the project's original stress_test.sh used `script`).
+  script -qc "timeout ${TIMEOUT_S}s $QEMU -M virt -cpu cortex-a53 -nographic -device dma-accel -kernel $ELF -smp $SMP" "$log" >/dev/null
 
   # normalize: strip \r that corrupted stress_irq.sh's old inline metrics
   sed -i 's/\r$//' "$log"
